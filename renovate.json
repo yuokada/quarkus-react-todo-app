@@ -1,5 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "groupName": "all testing-library updates",
+      "groupSlug": "testing-library",
+      "matchPackagePrefixes": [
+        "@testing-library/"
+      ]
+    }
+  ],
   "extends": [
     "config:recommended"
   ]
