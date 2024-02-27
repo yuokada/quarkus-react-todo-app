@@ -4,8 +4,8 @@
     {
       "groupName": "all testing-library updates",
       "groupSlug": "testing-library",
-      "matchPackagePatterns": [
-        "testing-library"
+      "matchPackagePrefixes": [
+        "@testing-library/"
       ]
     }
   ],
