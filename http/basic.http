@@ -1,0 +1,22 @@
+# curl -X 'POST'
+#  'http://localhost:8080/persons'
+#  -H 'accept: */*'
+#  -H 'Content-Type: application/json'
+#  -d '{
+#  "id": 0,
+#  "name": "string",
+#  "birth": "2022-03-10",
+#  "status": "Alive"
+#}'
+POST http://localhost:8080/persons
+accept: */*
+Content-Type: application/json
+
+{
+  "name": "John doe2",
+  "birth": "2022-02-10",
+  "status": "Alive"
+}
+
+###
+
