@@ -34,6 +34,7 @@ jobs:
         with:
           # java-version: '21'
           node-version-file: '.tool-versions'
+          cache-dependency-path: 'src/main/webui/package-lock.json'
           cache: 'npm'
       - name: Build with Maven
         run: mvn -B package -DskipTests --file pom.xml
