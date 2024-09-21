@@ -1,0 +1,26 @@
+---
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    # open-pull-requests-limit: 5
+    groups:
+      maven-plugin-dependencies:
+        patterns:
+          - "org.apache.maven.plugins*"
+      quarkus-dependencies:
+        patterns:
+          - "io.quarkus:*"
+          - "io.quarkus.platform:*"
+          - "io.quarkus.*"
+  - package-ecosystem: "npm"
+    directory: "/src/main/webui"
+    schedule:
+      interval: "weekly"
+    # open-pull-requests-limit: 5
