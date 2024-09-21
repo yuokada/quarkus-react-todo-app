@@ -28,7 +28,13 @@ jobs:
           # java-version: '21'
           java-version-file: '.tool-versions'
           distribution: 'temurin'
-          cache: maven
+          cache: 'maven'
+      - name: Set up node.js
+        uses: actions/setup-node@v4
+        with:
+          # java-version: '21'
+          node-version-file: '.tool-versions'
+          cache: 'npm'
       - name: Build with Maven
         run: mvn -B package -DskipTests --file pom.xml
       - name: Show dependencies
