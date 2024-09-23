@@ -9,6 +9,79 @@ servers:
 - url: http://0.0.0.0:8080
   description: Auto generated value
 paths:
+  /api/async/todos:
+    get:
+      tags:
+      - Todo Async Resource Impl
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Todo Async Resource Impl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoTask"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+  /api/async/todos/{id}:
+    get:
+      tags:
+      - Todo Async Resource Impl
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Todo Async Resource Impl
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          format: int32
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoTask"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+    delete:
+      tags:
+      - Todo Async Resource Impl
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
   /api/todos:
     get:
       tags:

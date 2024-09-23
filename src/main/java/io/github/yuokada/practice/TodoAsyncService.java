@@ -1,7 +1,5 @@
 package io.github.yuokada.practice;
 
-import static io.smallrye.mutiny.Uni.join;
-
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ReactiveValueCommands;
@@ -9,8 +7,12 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class TodoAsyncService {
@@ -19,11 +21,13 @@ public class TodoAsyncService {
 
     private final ReactiveValueCommands<String, TodoTask> todoCommands;
     private final ReactiveKeyCommands<String> keyCommands;
+    private final Logger logger;
 
     @Inject
-    public TodoAsyncService(ReactiveRedisDataSource ds) {
+    public TodoAsyncService(ReactiveRedisDataSource ds, Logger logger) {
         this.todoCommands = ds.value(TodoTask.class);
         this.keyCommands = ds.key();
+        this.logger = logger;
     }
 
     public List<TodoTask> tasks() {
@@ -36,33 +40,66 @@ public class TodoAsyncService {
     }
 
     private Uni<TodoTask> task(String id) {
-        return todoCommands.get(id);
+        return todoCommands.get(id)
+            .onFailure()
+            .retry()
+            .atMost(5);
     }
 
     private TodoTask syncTask(String id) {
-        return todoCommands.get(id).subscribeAsCompletionStage().join();
+        return todoCommands.get(id).subscribeAsCompletionStage().toCompletableFuture().join();
     }
 
-    public Uni<TodoTask> task(Integer id) {
-        return todoCommands.get(id.toString());
+//    public CompletionStage<TodoTask> create(TodoTask task) {
+//        return nextId()
+//            .thenCompose(nextId -> {
+//                logger.infof("Next ID: %d", nextId);
+//                TodoTask newTask = new TodoTask(nextId, task.title(), task.isCompleted());
+//                logger.info(newTask);
+//                return todoCommands.set(nextId.toString(),
+//                        newTask)
+//                    .subscribeAsCompletionStage()
+//                    .thenCompose((v) -> {
+//                        logger.info("Task created");
+//
+//                        return todoCommands.get(nextId.toString())
+//                            .subscribeAsCompletionStage().toCompletableFuture();
+//                    });
+//            });
+//    }
+    public CompletionStage<TodoTask> create(TodoTask task) {
+        return nextId()
+            .thenApply(nextId -> {
+                logger.infof("Next ID: %d", nextId);
+                return new TodoTask(nextId, task.title(), task.isCompleted());
+            })
+            .thenCompose(newTask ->
+                todoCommands.set(newTask.id().toString(), newTask)
+                    .subscribeAsCompletionStage()
+                    .thenApply(v -> {
+                        logger.info("Task created");
+                        return newTask;
+                    })
+            )
+            .thenCompose(newTask ->
+                todoCommands.get(newTask.id().toString())
+                    .subscribeAsCompletionStage()
+                    .toCompletableFuture()
+            );
     }
 
-    public TodoTask create(TodoTask task) {
-        try {
-            Integer nextId = nextId();
-            TodoTask newTask = new TodoTask(nextId, task.title(), task.isCompleted());
-            todoCommands.set(nextId.toString(), newTask);
-            join();
-            return newTask;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
-    private Integer nextId() throws ExecutionException, InterruptedException {
-        // NOTE: This is not a safe way to generate unique IDs
-        Long result = todoCommands.incrby(ID_KEY, 2).subscribeAsCompletionStage().get();
-        return result.intValue();
+//    private Integer nextIdOld() throws ExecutionException, InterruptedException {
+//        // NOTE: This is not a safe way to generate unique IDs
+//        Long result = todoCommands.incrby(ID_KEY, 2).subscribeAsCompletionStage().get();
+//        return result.intValue();
+//    }
+
+    private CompletionStage<Integer> nextId() {
+        return todoCommands
+            .incrby(ID_KEY, 2)
+            .subscribeAsCompletionStage()
+            .thenApply(Long::intValue);
     }
 
     public TodoTask update(Integer id, TodoTask task) {
@@ -75,8 +112,15 @@ public class TodoAsyncService {
         return updatedTask;
     }
 
-    public boolean delete(Integer id) throws ExecutionException, InterruptedException {
+    public CompletableFuture<Boolean> delete(Integer id) {
         Uni<Boolean> uniResult = keyCommands.del(id.toString()).map(l -> l == 1L);
-        return uniResult.subscribeAsCompletionStage().get();
+        return uniResult
+            .subscribeAsCompletionStage()
+            .exceptionally(ex -> {
+                if (ex instanceof ExecutionException || ex instanceof InterruptedException) {
+                    throw new RuntimeException(ex);
+                }
+                throw new CompletionException(ex);
+            });
     }
 }

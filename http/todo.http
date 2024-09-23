@@ -22,3 +22,15 @@ Content-Type: application/json
 {
   "title": "my super task / updated"
 }
+
+
+###
+GET http://localhost:8080/api/async/todos/18
+
+###
+POST http://localhost:8080/api/async/todos
+Content-Type: application/json
+
+{
+  "title": "my async task"
+}
