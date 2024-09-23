@@ -1,0 +1,24 @@
+###
+GET http://localhost:8080/api/todos
+
+###
+GET http://localhost:8080/api/todos/12
+
+###
+POST http://localhost:8080/api/todos
+Content-Type: application/json
+
+{
+  "title": "my 22nd task"
+}
+
+###
+DELETE http://localhost:8080/api/todos/18
+
+###
+PUT http://localhost:8080/api/todos/21
+Content-Type: application/json
+
+{
+  "title": "my super task / updated"
+}
