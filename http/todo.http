@@ -1,0 +1,52 @@
+###
+GET http://localhost:8080/api/todos
+
+###
+GET http://localhost:8080/api/todos/12
+
+###
+POST http://localhost:8080/api/todos
+Content-Type: application/json
+
+{
+  "title": "my 22nd task"
+}
+
+###
+DELETE http://localhost:8080/api/todos/18
+
+###
+PUT http://localhost:8080/api/todos/21
+Content-Type: application/json
+
+{
+  "title": "my super task / updated"
+}
+
+
+###
+GET http://localhost:8080/api/async/todos/44
+
+###
+POST http://localhost:8080/api/async/todos
+Content-Type: application/json
+
+{
+  "title": "my new async task"
+}
+###
+PUT http://localhost:8080/api/async/todos/44
+Content-Type: application/json
+
+{
+  "title": "my new async task updated 2",
+  "completed": false
+}
+###
+PUT http://localhost:8080/api/async/todos/9999999
+Content-Type: application/json
+
+{
+  "title": "my new async task updated 2",
+  "completed": false
+}

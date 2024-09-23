@@ -1,4 +1,4 @@
-package io.learning.entity;
+package io.github.yuokada.practice;
 
 public enum Status {
     Alive,
