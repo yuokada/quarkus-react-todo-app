@@ -1,8 +1,0 @@
---     redis.set('users:1', JSON.stringify({ id: 1, name: 'alpha' })),
---     redis.set('users:2', JSON.stringify({ id: 2, name: 'bravo' })),
---     redis.set('users:3', JSON.stringify({ id: 3, name: 'charlie' })),
---     redis.set('users:4', JSON.stringify({ id: 4, name: 'delta' }))
-SET users:1 "{\"id\":1,\"name\":\"alpha\"}"
-SET users:2 "{\"id\":2,\"name\":\"bravo\"}"
-SET users:3 "{\"id\":3,\"name\":\"charlie\"}"
-SET users:4 "{\"id\":4,\"name\":\"delta\"}"

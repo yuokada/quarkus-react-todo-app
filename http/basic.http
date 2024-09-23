@@ -1,0 +1,21 @@
+###
+GET http://localhost:8080/increments
+
+###
+GET http://localhost:8080/increments/foo
+
+###
+POST http://localhost:8080/increments/
+Content-Type: application/json
+
+{
+  "key": "foo",
+  "value": 100
+}
+
+###
+PUT http://localhost:8080/increments/foo
+Content-Type: application/json
+Accept: application/json
+
+3
