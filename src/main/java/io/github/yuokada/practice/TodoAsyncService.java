@@ -49,35 +49,13 @@ public class TodoAsyncService {
                 .collect(Collectors.toList()))
             .onItem().invoke(keys -> logger.infof("Task IDs: %s", keys))
             .onItem()
-            .transformToMulti(keys -> Multi.createFrom().items(keys.stream())) // キーをストリームに変換
+            .transformToMulti(keys -> Multi.createFrom().items(keys.stream()))
             .onItem()
             .transformToUniAndMerge(todoCommands::get)             // 各キーに対して非同期取得
             .onItem().invoke(task -> logger.infof("Task detail: %s", task))
             .collect().asList();
     }
 
-    private TodoTask syncTask(String id) {
-        return todoCommands.get(id).await().indefinitely();
-        // return todoCommands.get(id).subscribeAsCompletionStage().toCompletableFuture().join();
-    }
-
-    //    public CompletionStage<TodoTask> create(TodoTask task) {
-//        return nextId()
-//            .thenCompose(nextId -> {
-//                logger.infof("Next ID: %d", nextId);
-//                TodoTask newTask = new TodoTask(nextId, task.title(), task.isCompleted());
-//                logger.info(newTask);
-//                return todoCommands.set(nextId.toString(),
-//                        newTask)
-//                    .subscribeAsCompletionStage()
-//                    .thenCompose((v) -> {
-//                        logger.info("Task created");
-//
-//                        return todoCommands.get(nextId.toString())
-//                            .subscribeAsCompletionStage().toCompletableFuture();
-//                    });
-//            });
-//    }
     public CompletionStage<TodoTask> create(TodoTask task) {
         return nextId()
             .thenApply(nextId -> {
@@ -99,27 +77,11 @@ public class TodoAsyncService {
             );
     }
 
-//    private Integer nextIdOld() throws ExecutionException, InterruptedException {
-//        // NOTE: This is not a safe way to generate unique IDs
-//        Long result = todoCommands.incrby(ID_KEY, 2).subscribeAsCompletionStage().get();
-//        return result.intValue();
-//    }
-
     private CompletionStage<Integer> nextId() {
         return todoCommands
             .incrby(ID_KEY, 2)
             .subscribeAsCompletionStage()
             .thenApply(Long::intValue);
-    }
-
-    public TodoTask update(Integer id, TodoTask task) {
-        TodoTask currentTask = syncTask(id.toString());
-        if (currentTask == null) {
-            return null;
-        }
-        TodoTask updatedTask = new TodoTask(id, task.title(), task.isCompleted());
-        todoCommands.set(id.toString(), updatedTask);
-        return updatedTask;
     }
 
     public Uni<TodoTask> updateAsync(Integer id, TodoTask task) {
