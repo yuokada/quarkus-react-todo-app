@@ -1,0 +1,5 @@
+SET users:1 "{\"id\":1,\"name\":\"alpha\"}"
+SET users:2 "{\"id\":2,\"name\":\"bravo\"}"
+SET users:3 "{\"id\":3,\"name\":\"charlie\"}"
+SET users:4 "{\"id\":4,\"name\":\"delta\"}"
+SET 49 '{"id":48,"title":"my new async task","completed":false}'
