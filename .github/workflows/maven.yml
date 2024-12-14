@@ -37,7 +37,7 @@ jobs:
           cache-dependency-path: 'src/main/webui/package-lock.json'
           cache: 'npm'
       - name: Build with Maven
-        run: mvn -B package -DskipTests --file pom.xml
+        run: mvn -B package --file pom.xml
       - name: Show dependencies
         run: |
           ./mvnw -B dependency:list
