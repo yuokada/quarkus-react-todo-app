@@ -133,7 +133,7 @@ class TodoAsyncResourceTest {
     // @AfterAll
     static void cleanup() {
         // Sleep for n minutes
-        int n = 1;
+        int n = 0;
         try {
             Thread.sleep(60000 * n);
         } catch (InterruptedException e) {
