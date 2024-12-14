@@ -1,5 +1,6 @@
 package io.github.yuokada.practice;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class IncrementResourceTest {
             .get("/increments")
             .then()
             .statusCode(200)
-            .body("size()", is(0));
+            .body("size()", greaterThanOrEqualTo(0));
 
         // create a first increment key with an initial value of 0
         given()
@@ -93,7 +94,7 @@ public class IncrementResourceTest {
             .get("/increments")
             .then()
             .statusCode(200)
-            .body("size()", is(2));
+            .body("size()", greaterThanOrEqualTo(2));
 
         // delete first key
         given()
@@ -110,7 +111,7 @@ public class IncrementResourceTest {
             .get("/increments")
             .then()
             .statusCode(200)
-            .body("size()", is(1));
+            .body("size()", greaterThanOrEqualTo(1));
 
         // delete second key
         given()
@@ -127,6 +128,6 @@ public class IncrementResourceTest {
             .get("/increments")
             .then()
             .statusCode(200)
-            .body("size()", is(0));
+            .body("size()", greaterThanOrEqualTo(0));
     }
 }

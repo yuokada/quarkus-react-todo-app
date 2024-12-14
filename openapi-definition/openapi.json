@@ -1,31 +1,8 @@
 {
-  "openapi" : "3.0.3",
-  "info" : {
-    "title" : "quarkus-react-todo-app API",
-    "version" : "1.0.0-SNAPSHOT"
-  },
-  "servers" : [ {
-    "url" : "http://localhost:8080",
-    "description" : "Auto generated value"
-  }, {
-    "url" : "http://0.0.0.0:8080",
-    "description" : "Auto generated value"
-  } ],
+  "openapi" : "3.1.0",
   "paths" : {
     "/api/async/todos" : {
-      "get" : {
-        "tags" : [ "Todo Async Resource Impl" ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : { }
-            }
-          }
-        }
-      },
       "post" : {
-        "tags" : [ "Todo Async Resource Impl" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -33,7 +10,8 @@
                 "$ref" : "#/components/schemas/TodoTask"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -42,39 +20,32 @@
               "application/json" : { }
             }
           }
-        }
+        },
+        "summary" : "Post",
+        "tags" : [ "Todo Async Resource Impl" ]
+      },
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        },
+        "summary" : "Keys",
+        "tags" : [ "Todo Async Resource Impl" ]
       }
     },
     "/api/async/todos/{id}" : {
-      "get" : {
-        "tags" : [ "Todo Async Resource Impl" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : { }
-            }
-          }
-        }
-      },
       "put" : {
-        "tags" : [ "Todo Async Resource Impl" ],
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "requestBody" : {
@@ -84,7 +55,8 @@
                 "$ref" : "#/components/schemas/TodoTask"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -93,17 +65,18 @@
               "application/json" : { }
             }
           }
-        }
+        },
+        "summary" : "Put",
+        "tags" : [ "Todo Async Resource Impl" ]
       },
-      "delete" : {
-        "tags" : [ "Todo Async Resource Impl" ],
+      "get" : {
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -113,20 +86,34 @@
               "application/json" : { }
             }
           }
-        }
+        },
+        "summary" : "Detail",
+        "tags" : [ "Todo Async Resource Impl" ]
+      },
+      "delete" : {
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Todo Async Resource Impl" ]
       }
     },
     "/api/todos" : {
-      "get" : {
-        "tags" : [ "Todo Resource Impl" ],
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          }
-        }
-      },
       "post" : {
-        "tags" : [ "Todo Resource Impl" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -134,42 +121,36 @@
                 "$ref" : "#/components/schemas/TodoTask"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
             "description" : "OK"
           }
-        }
+        },
+        "summary" : "Post",
+        "tags" : [ "Todo Resource Impl" ]
+      },
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Keys",
+        "tags" : [ "Todo Resource Impl" ]
       }
     },
     "/api/todos/{id}" : {
-      "get" : {
-        "tags" : [ "Todo Resource Impl" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "format" : "int32",
-            "type" : "integer"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          }
-        }
-      },
       "put" : {
-        "tags" : [ "Todo Resource Impl" ],
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "requestBody" : {
@@ -179,35 +160,56 @@
                 "$ref" : "#/components/schemas/TodoTask"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
             "description" : "OK"
           }
-        }
+        },
+        "summary" : "Put",
+        "tags" : [ "Todo Resource Impl" ]
       },
-      "delete" : {
-        "tags" : [ "Todo Resource Impl" ],
+      "get" : {
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
           "200" : {
             "description" : "OK"
           }
-        }
+        },
+        "summary" : "Detail",
+        "tags" : [ "Todo Resource Impl" ]
+      },
+      "delete" : {
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Todo Resource Impl" ]
       }
     },
     "/increments" : {
       "get" : {
-        "tags" : [ "Increment Resource" ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -222,10 +224,11 @@
               }
             }
           }
-        }
+        },
+        "summary" : "Keys",
+        "tags" : [ "Increment Resource" ]
       },
       "post" : {
-        "tags" : [ "Increment Resource" ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -233,7 +236,8 @@
                 "$ref" : "#/components/schemas/Increment"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "200" : {
@@ -246,35 +250,13 @@
               }
             }
           }
-        }
+        },
+        "summary" : "Create",
+        "tags" : [ "Increment Resource" ]
       }
     },
     "/increments/{key}" : {
-      "get" : {
-        "tags" : [ "Increment Resource" ],
-        "parameters" : [ {
-          "name" : "key",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Increment"
-                }
-              }
-            }
-          }
-        }
-      },
       "put" : {
-        "tags" : [ "Increment Resource" ],
         "parameters" : [ {
           "name" : "key",
           "in" : "path",
@@ -287,20 +269,46 @@
           "content" : {
             "text/plain" : {
               "schema" : {
-                "format" : "int64",
-                "type" : "integer"
+                "type" : "integer",
+                "format" : "int64"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "204" : {
             "description" : "No Content"
           }
-        }
+        },
+        "summary" : "Increment",
+        "tags" : [ "Increment Resource" ]
+      },
+      "get" : {
+        "parameters" : [ {
+          "name" : "key",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Increment"
+                }
+              }
+            }
+          }
+        },
+        "summary" : "Get",
+        "tags" : [ "Increment Resource" ]
       },
       "delete" : {
-        "tags" : [ "Increment Resource" ],
         "parameters" : [ {
           "name" : "key",
           "in" : "path",
@@ -313,7 +321,9 @@
           "204" : {
             "description" : "No Content"
           }
-        }
+        },
+        "summary" : "Delete",
+        "tags" : [ "Increment Resource" ]
       }
     }
   },
@@ -326,8 +336,8 @@
             "type" : "string"
           },
           "value" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -335,8 +345,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "format" : "int32",
-            "type" : "integer"
+            "type" : "integer",
+            "format" : "int32"
           },
           "title" : {
             "type" : "string"
@@ -347,5 +357,16 @@
         }
       }
     }
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080",
+    "description" : "Auto generated value"
+  }, {
+    "url" : "http://0.0.0.0:8080",
+    "description" : "Auto generated value"
+  } ],
+  "info" : {
+    "title" : "quarkus-react-todo-app API",
+    "version" : "1.0.0-SNAPSHOT"
   }
 }

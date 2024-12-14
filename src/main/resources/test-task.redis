@@ -1,0 +1,6 @@
+SET todo:id:counter 2
+SET 2 '{"id":2,   "title":"my new async task","completed":false}'
+SET 4 '{"id":4,   "title":"my new async task","completed":false}'
+SET 6 '{"id":6,   "title":"my new async task","completed":false}'
+SET 8 '{"id":8,   "title":"my new async task No.8","completed":false}'
+SET 10 '{"id":10, "title":"my new async task No.10","completed":false}'
