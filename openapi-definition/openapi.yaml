@@ -1,154 +1,158 @@
 ---
-openapi: 3.0.3
-info:
-  title: quarkus-react-todo-app API
-  version: 1.0.0-SNAPSHOT
-servers:
-- url: http://localhost:8080
-  description: Auto generated value
-- url: http://0.0.0.0:8080
-  description: Auto generated value
+openapi: 3.1.0
 paths:
   /api/async/todos:
-    get:
-      tags:
-      - Todo Async Resource Impl
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json: {}
     post:
-      tags:
-      - Todo Async Resource Impl
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/TodoTask"
+        required: true
       responses:
         "200":
           description: OK
           content:
             application/json: {}
+      summary: Post
+      tags:
+      - Todo Async Resource Impl
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+      summary: Keys
+      tags:
+      - Todo Async Resource Impl
   /api/async/todos/{id}:
-    get:
-      tags:
-      - Todo Async Resource Impl
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          format: int32
-          type: integer
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json: {}
     put:
-      tags:
-      - Todo Async Resource Impl
       parameters:
       - name: id
         in: path
         required: true
         schema:
-          format: int32
           type: integer
+          format: int32
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/TodoTask"
+        required: true
       responses:
         "200":
           description: OK
           content:
             application/json: {}
-    delete:
+      summary: Put
       tags:
       - Todo Async Resource Impl
+    get:
       parameters:
       - name: id
         in: path
         required: true
         schema:
-          format: int32
           type: integer
+          format: int32
       responses:
         "200":
           description: OK
           content:
             application/json: {}
+      summary: Detail
+      tags:
+      - Todo Async Resource Impl
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json: {}
+      summary: Delete
+      tags:
+      - Todo Async Resource Impl
   /api/todos:
-    get:
-      tags:
-      - Todo Resource Impl
-      responses:
-        "200":
-          description: OK
     post:
-      tags:
-      - Todo Resource Impl
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/TodoTask"
+        required: true
       responses:
         "200":
           description: OK
-  /api/todos/{id}:
+      summary: Post
+      tags:
+      - Todo Resource Impl
     get:
-      tags:
-      - Todo Resource Impl
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          format: int32
-          type: integer
       responses:
         "200":
           description: OK
-    put:
+      summary: Keys
       tags:
       - Todo Resource Impl
+  /api/todos/{id}:
+    put:
       parameters:
       - name: id
         in: path
         required: true
         schema:
-          format: int32
           type: integer
+          format: int32
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/TodoTask"
+        required: true
       responses:
         "200":
           description: OK
-    delete:
+      summary: Put
       tags:
       - Todo Resource Impl
+    get:
       parameters:
       - name: id
         in: path
         required: true
         schema:
-          format: int32
           type: integer
+          format: int32
       responses:
         "200":
           description: OK
+      summary: Detail
+      tags:
+      - Todo Resource Impl
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+      summary: Delete
+      tags:
+      - Todo Resource Impl
   /increments:
     get:
-      tags:
-      - Increment Resource
       responses:
         "200":
           description: OK
@@ -158,31 +162,16 @@ paths:
                 type: array
                 items:
                   type: string
-    post:
+      summary: Keys
       tags:
       - Increment Resource
+    post:
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/Increment"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Increment"
-  /increments/{key}:
-    get:
-      tags:
-      - Increment Resource
-      parameters:
-      - name: key
-        in: path
         required: true
-        schema:
-          type: string
       responses:
         "200":
           description: OK
@@ -190,9 +179,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Increment"
-    put:
+      summary: Create
       tags:
       - Increment Resource
+  /increments/{key}:
+    put:
       parameters:
       - name: key
         in: path
@@ -203,14 +194,33 @@ paths:
         content:
           text/plain:
             schema:
-              format: int64
               type: integer
+              format: int64
+        required: true
       responses:
         "204":
           description: No Content
-    delete:
+      summary: Increment
       tags:
       - Increment Resource
+    get:
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Increment"
+      summary: Get
+      tags:
+      - Increment Resource
+    delete:
       parameters:
       - name: key
         in: path
@@ -220,6 +230,9 @@ paths:
       responses:
         "204":
           description: No Content
+      summary: Delete
+      tags:
+      - Increment Resource
 components:
   schemas:
     Increment:
@@ -228,15 +241,23 @@ components:
         key:
           type: string
         value:
-          format: int64
           type: integer
+          format: int64
     TodoTask:
       type: object
       properties:
         id:
-          format: int32
           type: integer
+          format: int32
         title:
           type: string
         completed:
           type: boolean
+servers:
+- url: http://localhost:8080
+  description: Auto generated value
+- url: http://0.0.0.0:8080
+  description: Auto generated value
+info:
+  title: quarkus-react-todo-app API
+  version: 1.0.0-SNAPSHOT
