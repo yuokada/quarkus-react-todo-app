@@ -28,5 +28,7 @@ updates:
       interval: "monthly"
     ignore:
       - dependency-name: "eslint*"
-        update-types: ["version-update:semver-majour","version-update:semver-minor", "version-update:semver-patch"]
+        update-types: ["version-update:semver-major","version-update:semver-minor", "version-update:semver-patch"]
+      - dependency-name: "@eslint*"
+        update-types: ["version-update:semver-major","version-update:semver-minor", "version-update:semver-patch"]
     # open-pull-requests-limit: 5
