@@ -9,6 +9,12 @@
       ]
     }
   ],
+  "node": {
+    "supportPolicy": ["all"],
+    "major": {
+      "enabled": true
+    }
+  },
   "extends": [
     "config:recommended"
   ]
