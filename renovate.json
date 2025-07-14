@@ -7,6 +7,10 @@
       "matchPackagePrefixes": [
         "@testing-library/"
       ]
+    },
+    {
+      "matchPackagePattern": ["^io.quarkus:*"],
+      "allowedVersions": "/^3.(15|20)(\\..*)?$/"
     }
   ],
   "node": {
