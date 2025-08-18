@@ -26,6 +26,11 @@ updates:
     directory: "/src/main/webui"
     schedule:
       interval: "monthly"
+    groups:
+      react-dependencies:
+        patterns:
+          - "react"
+          - "react-*"
     ignore:
       - dependency-name: "eslint*"
         update-types: ["version-update:semver-major","version-update:semver-minor", "version-update:semver-patch"]
