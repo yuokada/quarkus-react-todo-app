@@ -11,6 +11,10 @@
     {
       "matchPackagePatterns": ["^io.quarkus:*"],
       "allowedVersions": "/^3.(15|20)(\\..*)?$/"
+    },
+    {
+      "matchDatasources": ["npm"],
+      "minimumReleaseAge": "7 days"
     }
   ],
   "node": {
