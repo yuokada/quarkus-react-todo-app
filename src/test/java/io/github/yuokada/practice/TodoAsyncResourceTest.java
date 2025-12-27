@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.Timeout;
 
 @QuarkusTest
+@QuarkusTestResource(RedisTestResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TodoAsyncResourceTest {
 
