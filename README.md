@@ -60,7 +60,7 @@ see also: http://localhost:8080/q/swagger-ui/
 
 ## Container Image (Jib)
 - The dependency `quarkus-container-image-jib` is included and configured via `application.properties`.
-- Default image coordinates: `io.learning/quarkus-react-todo-app:latest`.
+- Default image coordinates: `io.github.yuokada.practice/quarkus-react-todo-app:latest-jib`.
 - Build locally: `./mvnw package -Dquarkus.container-image.build=true`
 - Push to a registry: `./mvnw package -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true`
 - Override registry/name/tag as needed with `quarkus.container-image.*` properties or system properties (see [Quarkus container image guide](https://quarkus.io/guides/container-image)).
