@@ -1,39 +1,38 @@
 # Repository Guidelines
 
-本ドキュメントは本リポジトリで作業するコントリビュータ向けのガイドです。簡潔・実用的な手順をまとめています。
+This document is a guide for contributors working in this repository. It lists concise, practical procedures.
 
-## プロジェクト構成
-- Backend(Java/Quarkus): `src/main/java/io/github/yuokada/practice/`
-- Resources/設定: `src/main/resources/`（`application.properties`, Redis ロードスクリプト, OpenAPI 出力先指定）
-- Frontend(React/Vite): `src/main/webui/`
-- テスト: `src/test/java/...`
+## Project Structure
+- Backend (Java/Quarkus): `src/main/java/io/github/yuokada/practice/`
+- Resources/Configuration: `src/main/resources/` (`application.properties`, Redis load scripts, OpenAPI output location)
+- Frontend (React/Vite): `src/main/webui/`
+- Tests: `src/test/java/...`
 - CI: `.github/workflows/maven.yml`
-- 主要ファイル: `pom.xml`, `README.md`
+- Key files: `pom.xml`, `README.md`
 
-## ビルド・テスト・開発
-- 開発起動(ホットリロード/Quinoa連携): `./mvnw compile quarkus:dev`
-- ビルド(JAR): `./mvnw package`
-- ネイティブ: `./mvnw package -Pnative`
-- テスト: `./mvnw test`
-- Frontend 単体: `cd src/main/webui && npm run dev|build|preview`
-補足: Dev時は Vite(既定 5173) を Quarkus がプロキシ。OpenAPI は `openapi-definition/` に出力。
+## Build, Test, Development
+- Dev mode (hot reload/Quinoa integration): `./mvnw compile quarkus:dev`
+- Build JAR: `./mvnw package`
+- Native build: `./mvnw package -Pnative`
+- Test: `./mvnw test`
+- Frontend only: `cd src/main/webui && npm run dev|build|preview`
+Note: During dev, Quarkus proxies Vite (default 5173). OpenAPI output goes to `openapi-definition/`.
 
-## コーディング規約・命名
-- Java: 4スペースインデント、`record` による DTO（例: `TodoTask`）。パッケージは `io.github.yuokada.practice`。
-- REST: ベースは `/api/todos`, `/api/async/todos`, `/increments`。`@Produces(MediaType.APPLICATION_JSON)` を基本。
-- Lint/Format: Frontend は Biome（`npm run biome:lint`, `npm run biome:format`）。YAML/JSON は pre-commit（`yamlfmt`, `check-yaml`, `check-json`）。
+## Coding Conventions and Naming
+- Java: 4-space indent, use `record` for DTOs (example: `TodoTask`). Package name is `io.github.yuokada.practice`.
+- REST: Base paths `/api/todos`, `/api/async/todos`, `/increments`. Default to `@Produces(MediaType.APPLICATION_JSON)`.
+- Lint/Format: Frontend uses Biome (`npm run biome:lint`, `npm run biome:format`). YAML/JSON are handled by pre-commit (`yamlfmt`, `check-yaml`, `check-json`).
 
-## テスト方針
-- フレームワーク: Quarkus JUnit5 + RestAssured（例: `TodoAsyncResourceTest`）。
-- 実行: `./mvnw test`。必要に応じ Redis DevServices かローカル `redis://localhost:6379/0` を選択。
-- 命名: テストクラスは `*Test.java`。エンドツーエンドに近い API テストを推奨。
+## Testing Strategy
+- Framework: Quarkus JUnit5 + RestAssured (example: `TodoAsyncResourceTest`).
+- Execution: `./mvnw test`. Choose Redis DevServices or local `redis://localhost:6379/0` as needed.
+- Naming: Test classes end with `*Test.java`. Prefer API tests that approach end-to-end coverage.
 
-## コミット / PR
-- コミット: 変更の意図が伝わる短句 + 要点（例: "fix: async 更新404の扱いを修正"）。
-- PR 要件: 概要・背景、変更点、動作確認手順（コマンド/スクリーンショット）、関連Issueのリンク、影響範囲（API/設定）。
+## Commit / PR
+- Commits: Short phrase conveying intent + main point (example: "fix: async 更新404の扱いを修正").
+- PR requirements: Overview/background, list of changes, verification steps (commands/screenshots), related issue links, impacted areas (API/configuration).
 
-## セキュリティ / 設定のヒント
-- Redis: DevServicesを使う場合は `quarkus.redis.hosts` をコメントアウト。ローカル使用時は `%dev.quarkus.redis.hosts=redis://localhost:6379/0`。
-- Node/JDK: `.tool-versions` に準拠。CI も同設定を利用。
-- コンテナ: Jib によりイメージ化可能（`quarkus-container-image-jib`）。
-
+## Security / Configuration Tips
+- Redis: Comment out `quarkus.redis.hosts` when using DevServices. For local use, set `%dev.quarkus.redis.hosts=redis://localhost:6379/0`.
+- Node/JDK: Follow versions in `.tool-versions`; CI uses the same.
+- Containers: Use Jib (`quarkus-container-image-jib`) to build images.
