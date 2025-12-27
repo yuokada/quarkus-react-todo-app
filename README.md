@@ -84,5 +84,6 @@ Easily start your Reactive RESTful Web Services
 - [Redis Extension Reference Guide - Quarkus](https://quarkus.io/guides/redis-reference)
 - [Using the Redis Client - Quarkus](https://quarkus.io/guides/redis)
 - [Dev Services for Redis - Quarkus](https://quarkus.io/guides/redis-dev-services)
+- [valkey/valkey - Docker Image](https://hub.docker.com/r/valkey/valkey)
 
 For more contributor-oriented details (naming, linting, etc.), see `AGENTS.md`.
