@@ -69,3 +69,9 @@ This is a tiny webpack app to get started with Quinoa. It generates a quinoa.htm
 Easily start your Reactive RESTful Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+
+### Redis
+
+- [Redis Extension Reference Guide - Quarkus](https://quarkus.io/guides/redis-reference)
+- [Using the Redis Client - Quarkus](https://quarkus.io/guides/redis)
+- [Dev Services for Redis - Quarkus](https://quarkus.io/guides/redis-dev-services)
