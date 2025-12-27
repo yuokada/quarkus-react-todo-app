@@ -17,6 +17,7 @@ This project combines a Quarkus REST backend with a Vite/React Todo UI using the
 | Native build | `./mvnw package -Pnative` | Add `-Dquarkus.native.container-build=true` to build via container. |
 | Frontend dev only | `cd src/main/webui && npm run dev` | Runs Vite standalone (default port 5173). |
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
+| Build container image (Jib) | `./mvnw package -Dquarkus.container-image.build=true` | Produces an OCI image via Jib; append `-Dquarkus.container-image.push=true` to push. |
 
 ## Quinoa Configuration
 `src/main/resources/application.properties` contains:
@@ -56,6 +57,13 @@ see also: http://localhost:8080/q/swagger-ui/
 ## Testing
 - Tests live under `src/test/java/...` and rely on Quarkus JUnit5 + RestAssured.
 - `%test.quarkus.redis.load-script=test-task.redis` loads fixtures for deterministic results.
+
+## Container Image (Jib)
+- The dependency `quarkus-container-image-jib` is included and configured via `application.properties`.
+- Default image coordinates: `io.learning/quarkus-react-todo-app:latest`.
+- Build locally: `./mvnw package -Dquarkus.container-image.build=true`
+- Push to a registry: `./mvnw package -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true`
+- Override registry/name/tag as needed with `quarkus.container-image.*` properties or system properties (see [Quarkus container image guide](https://quarkus.io/guides/container-image)).
 
 ## Related Guides
 
