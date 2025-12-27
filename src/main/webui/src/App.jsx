@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 const API_BASE = "/api/todos";
@@ -17,11 +17,7 @@ function App() {
 
   const pendingCount = useMemo(() => todos.filter((todo) => !todo.completed).length, [todos]);
 
-  useEffect(() => {
-    loadTodos();
-  }, []);
-
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -36,7 +32,11 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadTodos();
+  }, [loadTodos]);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
