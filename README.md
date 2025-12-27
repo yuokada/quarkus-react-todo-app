@@ -1,59 +1,68 @@
-# quinoa-with-quarkus Project
+# Quarkus React Todo App
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project combines a Quarkus REST backend with a Vite/React Todo UI using the Quarkiverse Quinoa extension. Redis is used as a lightweight data store backing the Todo API.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## Architecture at a Glance
+- **Backend**: Quarkus 3 + RESTEasy Reactive + Quarkus Redis Client. All resources live under `src/main/java/io/github/yuokada/practice`.
+- **Frontend**: React (Vite) with the main logic in `src/main/webui/src/App.jsx`.
+- **Storage**: Redis (DevServices or `redis://localhost:6379/0`). Tasks are stored as the `TodoTask` record.
+- **Quinoa**: Bridges Quarkus and the Vite app. In dev mode it proxies the Vite dev server; in prod it serves the built `dist/index.html` and assets.
 
-## Running the application in dev mode
+## Common Commands
+| Purpose | Command | Notes |
+| --- | --- | --- |
+| Backend + frontend live coding | `./mvnw compile quarkus:dev` | Launches Quarkus dev mode and Quinoa-managed Vite dev server at `http://localhost:8080`. Dev UI at `/q/dev`. |
+| Backend tests | `./mvnw test` | Uses Redis DevServices or local Redis depending on config. |
+| Package JAR | `./mvnw package` | Artifacts end up in `target/quarkus-app/`. |
+| Native build | `./mvnw package -Pnative` | Add `-Dquarkus.native.container-build=true` to build via container. |
+| Frontend dev only | `cd src/main/webui && npm run dev` | Runs Vite standalone (default port 5173). |
+| Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+## Quinoa Configuration
+`src/main/resources/application.properties` contains:
+```properties
+quarkus.quinoa.dev-server-port=5173
+quarkus.quinoa.build-dir=dist
+quarkus.quinoa.index-page=index.html
+quarkus.quinoa.enable-spa-routing=true
 ```
+This mimics the setup recommended in the [Advanced Guides](https://docs.quarkiverse.io/quarkus-quinoa/dev/advanced-guides.html). Dev mode proxies Vite, while prod serves the generated `dist/index.html` and falls back to it for SPA routing.
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+## REST API Summary
+Base URL: `http://localhost:8080/api/todos`
 
-## Packaging and running the application
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET /` | Fetch all tasks |
+| `GET /{id}` | Fetch a single task |
+| `POST /` | Create a task (`{"title":"...", "completed":false}`) |
+| `PUT /{id}` | Update title/completed |
+| `DELETE /{id}` | Delete a task (404 when missing) |
 
-The application can be packaged using:
-```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Additional async endpoints (`/api/async/todos`) and increment examples are also available in the same package. OpenAPI definitions are emitted into `openapi-definition/`.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+see also: http://localhost:8080/q/swagger-ui/
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
+## Frontend Highlights
+- `App.jsx` implements list rendering, creation form, completion toggles, and deletion, all backed by fetch calls to `/api/todos`.
+- `App.css` provides a lightweight card-style layout with responsive tweaks.
+- Error/loading states feed back to the UI via status messages.
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Redis Usage
+- **DevServices**: Leaving `%dev.quarkus.redis.hosts` commented lets Quarkus start Redis automatically in dev/test.
+- **Local Redis**: Set `%dev.quarkus.redis.hosts=redis://localhost:6379/0` to reuse an existing instance.
+- Seed scripts (`users.redis`, `test-task.redis`) help bootstrap data when needed.
 
-## Creating a native executable
-
-You can create a native executable using:
-```shell script
-./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/quinoa-with-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
+## Testing
+- Tests live under `src/test/java/...` and rely on Quarkus JUnit5 + RestAssured.
+- `%test.quarkus.redis.load-script=test-task.redis` loads fixtures for deterministic results.
 
 ## Related Guides
 
-- RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): A JAX-RS implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Quinoa is a Quarkus extension which eases the development, the build and serving single page apps or web components (built with NodeJS: React, Angular, Vue, Lit, …) alongside other Quarkus services (REST, GraphQL, Security, Events, ...).
+- RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): Build reactive REST services with Quarkus.
+- Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Develop, build, and serve SPA frontends alongside Quarkus services.
 
-Live code the backend and frontend together with close to no configuration. When enabled in development mode, Quinoa will start the UI live coding server provided by the target framework and forward relevant requests to it. In production mode, Quinoa will run the build and process the generated files to serve them at runtime.
-
+Live code the backend and frontend together with minimal configuration—Quinoa proxies the framework dev server during development and serves the generated assets in production.
 
 ## Provided Code
 
@@ -75,3 +84,5 @@ Easily start your Reactive RESTful Web Services
 - [Redis Extension Reference Guide - Quarkus](https://quarkus.io/guides/redis-reference)
 - [Using the Redis Client - Quarkus](https://quarkus.io/guides/redis)
 - [Dev Services for Redis - Quarkus](https://quarkus.io/guides/redis-dev-services)
+
+For more contributor-oriented details (naming, linting, etc.), see `AGENTS.md`.
