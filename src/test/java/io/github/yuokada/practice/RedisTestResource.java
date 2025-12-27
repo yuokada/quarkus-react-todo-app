@@ -11,7 +11,7 @@ public class RedisTestResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public Map<String, String> start() {
-        redis = new RedisContainer(DockerImageName.parse("redis:7.4.1"));
+        redis = new RedisContainer(DockerImageName.parse("valkey/valkey:7.2.11"));
         redis.start();
         return Map.of(
             "quarkus.redis.hosts", redis.getRedisURI(),
