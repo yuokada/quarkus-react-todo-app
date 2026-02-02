@@ -34,8 +34,6 @@ ci-cd:
   - changed-files:
     - any-glob-to-any-file:
       - '.github/workflows/**/*'
-      - '.github/**/*.yml'
-      - '.github/**/*.yaml'
 
 # Dependencies
 dependencies:
@@ -51,9 +49,9 @@ dependencies:
 configuration:
   - changed-files:
     - any-glob-to-any-file:
-      - '**/*.properties'
-      - '**/*.yml'
-      - '**/*.yaml'
-      - '**/*.json'
-      - '!src/main/webui/package*.json'
+      - 'src/main/resources/**/*.properties'
+      - 'src/main/resources/**/*.yml'
+      - 'src/main/resources/**/*.yaml'
       - '.tool-versions'
+      - '.github/labeler.yml'
+      - '.pre-commit-config.yaml'
