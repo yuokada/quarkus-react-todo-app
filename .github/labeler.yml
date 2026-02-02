@@ -1,0 +1,59 @@
+# Labeler configuration for automatically labeling pull requests
+# See https://github.com/actions/labeler for more information
+
+# Backend (Java/Quarkus)
+backend:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/main/java/**/*'
+      - 'src/main/resources/**/*'
+      - '!src/main/resources/META-INF/resources/**/*'
+
+# Frontend (React/Vite)
+frontend:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/main/webui/**/*'
+      - 'src/main/resources/META-INF/resources/**/*'
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/test/**/*'
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - 'docs/**/*'
+
+# CI/CD
+ci-cd:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/**/*'
+      - '.github/**/*.yml'
+      - '.github/**/*.yaml'
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pom.xml'
+      - 'src/main/webui/package.json'
+      - 'src/main/webui/package-lock.json'
+      - '.github/dependabot.yaml'
+      - 'renovate.json'
+
+# Configuration
+configuration:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.properties'
+      - '**/*.yml'
+      - '**/*.yaml'
+      - '**/*.json'
+      - '!src/main/webui/package*.json'
+      - '.tool-versions'
