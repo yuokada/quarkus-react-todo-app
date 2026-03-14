@@ -1,4 +1,4 @@
-package io.github.yuokada.practice;
+package io.github.yuokada.practice.domain.model;
 
 public record TodoTask(Integer id, String title, boolean completed) {
 

@@ -44,7 +44,7 @@ jobs:
         working-directory: src/main/webui
         run: npm run build
       - name: Build with Maven
-        run: ./mvnw -B package
+        run: ./mvnw -B clean package
       - name: Show dependencies
         run: |
           ./mvnw -B dependency:list

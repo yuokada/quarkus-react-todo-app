@@ -3,10 +3,30 @@
 This project combines a Quarkus REST backend with a Vite/React Todo UI using the Quarkiverse Quinoa extension. Redis is used as a lightweight data store backing the Todo API.
 
 ## Architecture at a Glance
-- **Backend**: Quarkus 3 + RESTEasy Reactive + Quarkus Redis Client. All resources live under `src/main/java/io/github/yuokada/practice`.
+- **Backend**: Quarkus 3 + RESTEasy Reactive + Quarkus Redis Client. The Java code is organized into domain, application, infrastructure, and presentation packages under `src/main/java/io/github/yuokada/practice`.
 - **Frontend**: React (Vite) with the main logic in `src/main/webui/src/App.jsx`.
 - **Storage**: Redis (DevServices or `redis://localhost:6379/0`). Tasks are stored as the `TodoTask` record.
 - **Quinoa**: Bridges Quarkus and the Vite app. In dev mode it proxies the Vite dev server; in prod it serves the built `dist/index.html` and assets.
+
+## Package Structure
+The backend now follows a simple Clean Architecture-style package split.
+
+- `io.github.yuokada.practice.domain.model`
+  Holds business data types such as `TodoTask`, `Status`, and `Increment`. These classes do not depend on Quarkus or Redis APIs.
+- `io.github.yuokada.practice.domain.repository`
+  Defines repository interfaces used by the application layer, such as `TodoRepository`, `TodoAsyncRepository`, and `IncrementRepository`.
+- `io.github.yuokada.practice.application.service`
+  Contains use-case services like `TodoService`, `TodoAsyncService`, and `IncrementService`. These services depend on repository interfaces, not on Redis-specific implementations.
+- `io.github.yuokada.practice.infrastructure.redis`
+  Contains Redis-backed implementations such as `RedisTodoRepository`, `RedisTodoAsyncRepository`, and `RedisIncrementRepository`. Quarkus Redis datasource access is isolated here.
+- `io.github.yuokada.practice.presentation.rest`
+  Contains JAX-RS resource interfaces and implementations such as `TodoResourceImpl`, `TodoAsyncResourceImpl`, and `IncrementResource`. This layer maps HTTP requests and responses to application services.
+
+Dependency direction:
+- `presentation` -> `application` -> `domain`
+- `infrastructure` -> `domain`
+
+In practice, this means REST resources do not talk to Redis directly, and application services do not import Quarkus Redis APIs.
 
 ## Common Commands
 | Purpose | Command | Notes |
@@ -46,7 +66,7 @@ Base URL: `http://localhost:8080/api/todos`
 | `PUT /{id}` | Update title/completed |
 | `DELETE /{id}` | Delete a task (404 when missing) |
 
-Additional async endpoints (`/api/async/todos`) and increment examples are also available in the same package. OpenAPI definitions are emitted into `openapi-definition/`.
+Additional async endpoints (`/api/async/todos`) and increment examples are exposed from the presentation layer. OpenAPI definitions are emitted into `openapi-definition/`.
 
 see also: http://localhost:8080/q/swagger-ui/
 
