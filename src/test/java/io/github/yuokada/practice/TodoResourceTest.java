@@ -48,6 +48,16 @@ class TodoResourceTest {
     }
 
     @Order(3)
+    @Test
+    void detailNonExistId() {
+        given().accept(ContentType.JSON)
+            .when()
+            .get("/api/todos/99999")
+            .then()
+            .statusCode(404);
+    }
+
+    @Order(4)
     @RepeatedTest(5)
     void post() {
         given()
@@ -61,7 +71,7 @@ class TodoResourceTest {
             .body("completed", is(false));
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void postWithInvalidBody() {
         given()
@@ -74,7 +84,7 @@ class TodoResourceTest {
             .statusCode(400);
     }
 
-    @Order(5)
+    @Order(6)
     @RepeatedTest(2)
     void put() {
         given()
@@ -89,7 +99,20 @@ class TodoResourceTest {
             .body("completed", is(true));
     }
 
-    @Order(6)
+    @Order(7)
+    @Test
+    void putToNonExistId() {
+        given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .body("{\"title\":\"missing sync task\",\"completed\":true}")
+            .when()
+            .put("/api/todos/99999")
+            .then()
+            .statusCode(404);
+    }
+
+    @Order(8)
     @Test
     @DisplayName("(Flaky test) Delete existing ID should return 204 No Content")
     void delete() {
@@ -110,7 +133,7 @@ class TodoResourceTest {
 
     }
 
-    @Order(7)
+    @Order(9)
     @Test
     void deleteNonExistId() {
         int nonExistId = 99999;
