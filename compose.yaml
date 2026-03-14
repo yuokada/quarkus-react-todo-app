@@ -1,0 +1,18 @@
+services:
+  valkey:
+    image: valkey/valkey:7.2.12
+    container_name: quarkus-react-todo-valkey
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - valkey-data:/data
+    command: ["valkey-server", "--appendonly", "yes"]
+
+volumes:
+  valkey-data:
