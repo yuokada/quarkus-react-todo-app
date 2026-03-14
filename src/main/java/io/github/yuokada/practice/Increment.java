@@ -10,6 +10,5 @@ public class Increment {
         this.value = value;
     }
 
-    public Increment() {
-    }
+    public Increment() {}
 }

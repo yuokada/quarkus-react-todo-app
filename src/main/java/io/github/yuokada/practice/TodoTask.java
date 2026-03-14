@@ -1,10 +1,6 @@
 package io.github.yuokada.practice;
 
-public record TodoTask(
-    Integer id,
-    String title,
-    boolean completed
-){
+public record TodoTask(Integer id, String title, boolean completed) {
 
     public TodoTask {
         if (title == null || title.isBlank()) {

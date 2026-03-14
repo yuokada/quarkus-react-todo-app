@@ -1,10 +1,7 @@
 package io.github.yuokada.practice;
 
 @Deprecated
-public record Users(
-    String key,
-    long value
-) {
+public record Users(String key, long value) {
 
     public Users {
         if (key == null || key.isBlank()) {

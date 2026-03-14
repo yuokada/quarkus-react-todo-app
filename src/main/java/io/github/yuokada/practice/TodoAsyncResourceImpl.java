@@ -1,12 +1,13 @@
 package io.github.yuokada.practice;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.CompletionStage;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.CompletionStage;
+
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
@@ -25,49 +26,60 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
     public CompletionStage<Response> keys() {
         var result = service.tasks();
         return result.onItem()
-            .transform(list -> Response.ok(list).build())
-            .subscribeAsCompletionStage();
+                .transform(list -> Response.ok(list).build())
+                .subscribeAsCompletionStage();
     }
 
     @Override
     public CompletionStage<Response> detail(Integer id) {
         return service.asyncTask(id.toString())
-            .onItem().transform(todoTask -> {
-                if (todoTask == null) {
-                    return Response.status(Response.Status.NOT_FOUND).build();
-                }
-                return Response.ok(todoTask).build();
-            }).subscribeAsCompletionStage();
+                .onItem()
+                .transform(
+                        todoTask -> {
+                            if (todoTask == null) {
+                                return Response.status(Response.Status.NOT_FOUND).build();
+                            }
+                            return Response.ok(todoTask).build();
+                        })
+                .subscribeAsCompletionStage();
     }
 
     @Override
     public CompletionStage<Response> post(TodoTask task) {
-        return service.create(task).thenApply(todoTask -> {
-                try {
-                    URI u = new URI("/api/async/todos/" + todoTask.id());
-                    return Response.created(u).entity(todoTask).build();
-                } catch (URISyntaxException e) {
-                    return Response.status(201).entity(todoTask).build();
-                }
-            });
+        return service.create(task)
+                .thenApply(
+                        todoTask -> {
+                            try {
+                                URI u = new URI("/api/async/todos/" + todoTask.id());
+                                return Response.created(u).entity(todoTask).build();
+                            } catch (URISyntaxException e) {
+                                return Response.status(201).entity(todoTask).build();
+                            }
+                        });
     }
 
     @Override
     public CompletionStage<Response> put(Integer id, TodoTask task) {
-        return service.updateAsync(id, task).onItem().transform(todoTask -> {
-            if (todoTask == null) {
-                logger.infof("Task ID not found: %d", id);
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.ok(todoTask).build();
-        }).subscribeAsCompletionStage();
+        return service.updateAsync(id, task)
+                .onItem()
+                .transform(
+                        todoTask -> {
+                            if (todoTask == null) {
+                                logger.infof("Task ID not found: %d", id);
+                                return Response.status(Response.Status.NOT_FOUND).build();
+                            }
+                            return Response.ok(todoTask).build();
+                        })
+                .subscribeAsCompletionStage();
     }
 
     @Override
     public CompletionStage<Response> delete(Integer id) {
         return service.delete(id)
-            .thenApply(deleteResult -> deleteResult
-                ? Response.noContent().build()
-                : Response.status(Response.Status.NOT_FOUND).build());
+                .thenApply(
+                        deleteResult ->
+                                deleteResult
+                                        ? Response.noContent().build()
+                                        : Response.status(Response.Status.NOT_FOUND).build());
     }
 }

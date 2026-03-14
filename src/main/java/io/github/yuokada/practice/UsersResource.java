@@ -1,14 +1,15 @@
 package io.github.yuokada.practice;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Deprecated
 @ApplicationScoped
@@ -31,10 +32,12 @@ public class UsersResource {
     public List<Users> getUsers() {
         try {
             // "user:*"にマッチするすべてのキーを取得する
-            List<String> keys = keyCommands.keys("user:*")
-                .subscribeAsCompletionStage()
-                .toCompletableFuture()
-                .get();  // 非同期処理が完了するまで待機
+            List<String> keys =
+                    keyCommands
+                            .keys("user:*")
+                            .subscribeAsCompletionStage()
+                            .toCompletableFuture()
+                            .get(); // 非同期処理が完了するまで待機
 
             // 結果を処理してUsersオブジェクトのリストを作成する
             List<Users> users = new ArrayList<>();
