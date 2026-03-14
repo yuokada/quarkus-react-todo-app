@@ -20,6 +20,10 @@ This project combines a Quarkus REST backend with a Vite/React Todo UI using the
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
 | Build container image (Jib) | `./mvnw package -Dquarkus.container-image.build=true` | Produces an OCI image via Jib; append `-Dquarkus.container-image.push=true` to push. |
 
+Toolchain:
+- Java: Temurin 25
+- Node.js: 24.14.0
+
 ## Quinoa Configuration
 `src/main/resources/application.properties` contains:
 ```properties
@@ -77,7 +81,7 @@ Live code the backend and frontend together with minimal configuration—Quinoa 
 
 ### Quinoa
 
-This is a tiny webpack app to get started with Quinoa. It generates a quinoa.html page and a script.
+This project uses Quinoa to wire a Vite/React frontend into the Quarkus application lifecycle.
 
 [Related guide section...](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)
 
