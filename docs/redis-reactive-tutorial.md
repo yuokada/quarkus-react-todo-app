@@ -3,10 +3,10 @@
 このドキュメントは、このリポジトリで使っている Quarkus Redis の非同期 API を題材に、`ReactiveRedisDataSource` と `Uni` の基本的な使い方をまとめたものです。
 
 対象コード:
-- [`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/quarkus-react-todo-app/src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
-- [`TodoAsyncResourceImpl.java`](/Users/yuokada/ghq/github.com/yuokada/quarkus-react-todo-app/src/main/java/io/github/yuokada/practice/TodoAsyncResourceImpl.java)
-- [`TodoAsyncResource.java`](/Users/yuokada/ghq/github.com/yuokada/quarkus-react-todo-app/src/main/java/io/github/yuokada/practice/TodoAsyncResource.java)
-- [`TodoTask.java`](/Users/yuokada/ghq/github.com/yuokada/quarkus-react-todo-app/src/main/java/io/github/yuokada/practice/TodoTask.java)
+- [`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
+- [`TodoAsyncResourceImpl.java`](src/main/java/io/github/yuokada/practice/TodoAsyncResourceImpl.java)
+- [`TodoAsyncResource.java`](src/main/java/io/github/yuokada/practice/TodoAsyncResource.java)
+- [`TodoTask.java`](src/main/java/io/github/yuokada/practice/TodoTask.java)
 
 ## 1. まず全体像
 
@@ -28,11 +28,11 @@
 - サービス層で早く `CompletionStage` に落とさない方が、処理の合成とエラー伝播が素直になる
 
 補足:
-- `Uni` と `CompletionStage` の使い分けルールは [`docs/reactive-return-types.md`](/Users/yuokada/ghq/github.com/yuokada/quarkus-react-todo-app/docs/reactive-return-types.md) にまとめています
+- `Uni` と `CompletionStage` の使い分けルールは [`docs/reactive-return-types.md`](docs/reactive-return-types.md) にまとめています
 
 ## 2. ReactiveRedisDataSource の基本
 
-[`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/quarkus-react-todo-app/src/main/java/io/github/yuokada/practice/TodoAsyncService.java) では、コンストラクタで `ReactiveRedisDataSource` を受け取り、用途ごとの command object を取り出しています。
+[`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java) では、コンストラクタで `ReactiveRedisDataSource` を受け取り、用途ごとの command object を取り出しています。
 
 ```java
 public TodoAsyncService(ReactiveRedisDataSource ds, Logger logger) {
