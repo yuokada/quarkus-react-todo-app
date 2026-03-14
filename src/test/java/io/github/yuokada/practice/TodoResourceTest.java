@@ -45,6 +45,15 @@ class TodoResourceTest {
     }
 
     @Test
+    void detailNonExistId() {
+        given().accept(ContentType.JSON)
+            .when()
+            .get("/api/todos/%d".formatted(NON_EXISTENT_ID))
+            .then()
+            .statusCode(404);
+    }
+
+    @Test
     void post() {
         given()
             .contentType(ContentType.JSON)
@@ -85,6 +94,18 @@ class TodoResourceTest {
             .body("id", is(createdTask.id()))
             .body("title", is("updated sync task"))
             .body("completed", is(true));
+    }
+
+    @Test
+    void putToNonExistId() {
+        given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .body("{\"title\":\"missing sync task\",\"completed\":true}")
+            .when()
+            .put("/api/todos/%d".formatted(NON_EXISTENT_ID))
+            .then()
+            .statusCode(404);
     }
 
     @Test
