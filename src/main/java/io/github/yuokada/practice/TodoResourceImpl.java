@@ -30,7 +30,11 @@ public class TodoResourceImpl implements TodoResource {
 
     @Override
     public Response detail(Integer id) {
-        return Response.ok(service.task(id)).build();
+        TodoTask todoTask = service.task(id);
+        if (todoTask == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(todoTask).build();
     }
 
     @Override
@@ -42,7 +46,11 @@ public class TodoResourceImpl implements TodoResource {
 
     @Override
     public Response put(Integer id, @RequestBody TodoTask task) {
-        return Response.ok(service.update(id, task)).build();
+        TodoTask updatedTask = service.update(id, task);
+        if (updatedTask == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updatedTask).build();
     }
 
     @Override
