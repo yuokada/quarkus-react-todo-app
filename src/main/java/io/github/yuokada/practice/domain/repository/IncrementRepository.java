@@ -1,7 +1,8 @@
 package io.github.yuokada.practice.domain.repository;
 
-import io.smallrye.mutiny.Uni;
 import java.util.List;
+
+import io.smallrye.mutiny.Uni;
 
 public interface IncrementRepository {
 

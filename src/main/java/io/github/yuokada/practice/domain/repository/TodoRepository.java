@@ -1,7 +1,8 @@
 package io.github.yuokada.practice.domain.repository;
 
-import io.github.yuokada.practice.domain.model.TodoTask;
 import java.util.List;
+
+import io.github.yuokada.practice.domain.model.TodoTask;
 
 public interface TodoRepository {
 

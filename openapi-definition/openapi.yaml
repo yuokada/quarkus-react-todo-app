@@ -18,7 +18,7 @@ paths:
           description: Bad Request
       summary: Post
       tags:
-      - Todo Async Resource Impl
+        - Todo Async Resource Impl
     get:
       responses:
         "200":
@@ -27,16 +27,16 @@ paths:
             application/json: {}
       summary: Keys
       tags:
-      - Todo Async Resource Impl
+        - Todo Async Resource Impl
   /api/async/todos/{id}:
     put:
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       requestBody:
         content:
           application/json:
@@ -52,15 +52,15 @@ paths:
           description: Bad Request
       summary: Put
       tags:
-      - Todo Async Resource Impl
+        - Todo Async Resource Impl
     get:
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: OK
@@ -68,15 +68,15 @@ paths:
             application/json: {}
       summary: Detail
       tags:
-      - Todo Async Resource Impl
+        - Todo Async Resource Impl
     delete:
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: OK
@@ -84,7 +84,7 @@ paths:
             application/json: {}
       summary: Delete
       tags:
-      - Todo Async Resource Impl
+        - Todo Async Resource Impl
   /api/todos:
     post:
       requestBody:
@@ -103,7 +103,7 @@ paths:
           description: Bad Request
       summary: Post
       tags:
-      - Todo Resource Impl
+        - Todo Resource Impl
     get:
       responses:
         "200":
@@ -113,16 +113,16 @@ paths:
               schema: {}
       summary: Keys
       tags:
-      - Todo Resource Impl
+        - Todo Resource Impl
   /api/todos/{id}:
     put:
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       requestBody:
         content:
           application/json:
@@ -139,15 +139,15 @@ paths:
           description: Bad Request
       summary: Put
       tags:
-      - Todo Resource Impl
+        - Todo Resource Impl
     get:
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: OK
@@ -156,15 +156,15 @@ paths:
               schema: {}
       summary: Detail
       tags:
-      - Todo Resource Impl
+        - Todo Resource Impl
     delete:
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
         "200":
           description: OK
@@ -173,7 +173,7 @@ paths:
               schema: {}
       summary: Delete
       tags:
-      - Todo Resource Impl
+        - Todo Resource Impl
   /increments:
     get:
       responses:
@@ -187,7 +187,7 @@ paths:
                   type: string
       summary: Keys
       tags:
-      - Increment Resource
+        - Increment Resource
     post:
       requestBody:
         content:
@@ -206,15 +206,15 @@ paths:
           description: Bad Request
       summary: Create
       tags:
-      - Increment Resource
+        - Increment Resource
   /increments/{key}:
     put:
       parameters:
-      - name: key
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           text/plain:
@@ -227,14 +227,14 @@ paths:
           description: No Content
       summary: Increment
       tags:
-      - Increment Resource
+        - Increment Resource
     get:
       parameters:
-      - name: key
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -244,20 +244,20 @@ paths:
                 $ref: "#/components/schemas/Increment"
       summary: Get
       tags:
-      - Increment Resource
+        - Increment Resource
     delete:
       parameters:
-      - name: key
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "204":
           description: No Content
       summary: Delete
       tags:
-      - Increment Resource
+        - Increment Resource
 components:
   schemas:
     Increment:
@@ -278,11 +278,17 @@ components:
           type: string
         completed:
           type: boolean
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
 servers:
-- url: http://localhost:8080
-  description: Auto generated value
-- url: http://0.0.0.0:8080
-  description: Auto generated value
+  - url: http://localhost:8080
+    description: Auto generated value
+  - url: http://0.0.0.0:8080
+    description: Auto generated value
 info:
   title: quarkus-react-todo-app API
   version: 1.0.0-SNAPSHOT
