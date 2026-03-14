@@ -358,7 +358,7 @@ Uni<TodoTask> task = todoCommands.get(id);
 ### Resource
 
 ```java
-return task.onItem().transform(Response::ok).subscribeAsCompletionStage();
+return task.onItem().transform(t -> Response.ok(t).build()).subscribeAsCompletionStage();
 ```
 
 まずはこの分離を守ると、Redis 非同期 API のコードはかなり読みやすくなります。
