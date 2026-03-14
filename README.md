@@ -96,6 +96,7 @@ see also: http://localhost:8080/q/swagger-ui/
 
 - RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): Build reactive REST services with Quarkus.
 - Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Develop, build, and serve SPA frontends alongside Quarkus services.
+- DynamoDB support plan: [`docs/dynamodb-support-plan.md`](docs/dynamodb-support-plan.md)
 - Reactive return type notes: [`docs/reactive-return-types.md`](docs/reactive-return-types.md)
 - Redis reactive tutorial: [`docs/redis-reactive-tutorial.md`](docs/redis-reactive-tutorial.md)
 
