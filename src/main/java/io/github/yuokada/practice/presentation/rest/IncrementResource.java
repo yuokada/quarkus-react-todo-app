@@ -29,7 +29,7 @@ public class IncrementResource {
 
     @POST
     public Increment create(Increment increment) {
-        service.set(increment.key, increment.value);
+        service.set(increment.key(), increment.value());
         return increment;
     }
 

@@ -1,14 +1,3 @@
 package io.github.yuokada.practice.domain.model;
 
-public class Increment {
-
-    public String key;
-    public long value;
-
-    public Increment(String key, long value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public Increment() {}
-}
+public record Increment(String key, long value) {}

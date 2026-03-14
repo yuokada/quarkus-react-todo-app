@@ -7,6 +7,7 @@ import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @ApplicationScoped
@@ -15,6 +16,7 @@ public class RedisIncrementRepository implements IncrementRepository {
     private final ReactiveKeyCommands<String> keyCommands;
     private final ValueCommands<String, Long> countCommands;
 
+    @Inject
     public RedisIncrementRepository(RedisDataSource ds, ReactiveRedisDataSource reactive) {
         countCommands = ds.value(Long.class);
         keyCommands = reactive.key();
