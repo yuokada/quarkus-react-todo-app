@@ -28,7 +28,7 @@
 - サービス層で早く `CompletionStage` に落とさない方が、処理の合成とエラー伝播が素直になる
 
 補足:
-- `Uni` と `CompletionStage` の使い分けルールは [`docs/reactive-return-types.md`](docs/reactive-return-types.md) にまとめています
+- `Uni` と `CompletionStage` の使い分けルールは [`docs/reactive-return-types.md`](/docs/reactive-return-types.md) にまとめています
 
 ## 2. ReactiveRedisDataSource の基本
 
@@ -55,7 +55,7 @@ public TodoAsyncService(ReactiveRedisDataSource ds, Logger logger) {
 最も単純なパターンは、キー 1 つを非同期に取得するケースです。
 
 対象:
-- [`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/practice/TodoAsyncService.java)
+- [`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
   - `asyncTask`
 
 ```java
@@ -83,7 +83,7 @@ public Uni<TodoTask> asyncTask(String id) {
 一覧取得は、Redis では「キー一覧を取る」処理と「各キーの値を取る」処理を組み合わせます。
 
 対象:
-- [`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/practice/TodoAsyncService.java)
+- [`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
   - `tasks`
 
 ```java
@@ -164,7 +164,7 @@ keyCommands.keys("*")
 Redis に値を書き込んで、そのまま作成済みオブジェクトを返す例です。
 
 対象:
-- [`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/practice/TodoAsyncService.java)
+- [`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
   - `create`
 
 ```java
@@ -196,7 +196,7 @@ public Uni<TodoTask> create(TodoTask task) {
 更新では「存在確認」と「書き込み」をつなげます。
 
 対象:
-- [`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/practice/TodoAsyncService.java)
+- [`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
   - `updateAsync`
 
 ```java
@@ -229,7 +229,7 @@ public Uni<TodoTask> updateAsync(Integer id, TodoTask task) {
 Redis の `DEL` は削除件数を返します。
 
 対象:
-- [`TodoAsyncService.java`](/Users/yuokada/ghq/github.com/yuokada/practice/TodoAsyncService.java)
+- [`TodoAsyncService.java`](src/main/java/io/github/yuokada/practice/TodoAsyncService.java)
   - `delete`
 
 ```java
@@ -254,7 +254,7 @@ public Uni<Boolean> delete(Integer id) {
 Service 層の `Uni<T>` を HTTP レスポンスへ変えるのが Resource 層です。
 
 対象:
-- [`TodoAsyncResourceImpl.java`](/Users/yuokada/ghq/github.com/yuokada/practice/TodoAsyncResourceImpl.java)
+- [`TodoAsyncResourceImpl.java`](src/main/java/io/github/yuokada/practice/TodoAsyncResourceImpl.java)
 
 ### 8-1. 一覧取得
 
