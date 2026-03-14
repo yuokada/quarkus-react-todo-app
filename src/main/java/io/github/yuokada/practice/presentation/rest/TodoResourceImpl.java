@@ -1,13 +1,15 @@
-package io.github.yuokada.practice;
+package io.github.yuokada.practice.presentation.rest;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import io.github.yuokada.practice.application.service.TodoService;
+import io.github.yuokada.practice.domain.model.TodoTask;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @ApplicationScoped

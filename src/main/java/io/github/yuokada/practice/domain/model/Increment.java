@@ -1,4 +1,4 @@
-package io.github.yuokada.practice;
+package io.github.yuokada.practice.domain.model;
 
 public class Increment {
 

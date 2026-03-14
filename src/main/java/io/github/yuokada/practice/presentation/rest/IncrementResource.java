@@ -1,5 +1,8 @@
-package io.github.yuokada.practice;
+package io.github.yuokada.practice.presentation.rest;
 
+import io.github.yuokada.practice.application.service.IncrementService;
+import io.github.yuokada.practice.domain.model.Increment;
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -7,7 +10,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import io.smallrye.mutiny.Uni;
 import java.util.List;
 
 @Path("/increments")

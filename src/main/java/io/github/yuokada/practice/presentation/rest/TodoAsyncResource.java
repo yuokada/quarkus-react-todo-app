@@ -1,6 +1,6 @@
-package io.github.yuokada.practice;
+package io.github.yuokada.practice.presentation.rest;
 
-import java.net.URISyntaxException;
+import io.github.yuokada.practice.domain.model.TodoTask;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -11,30 +11,32 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.net.URISyntaxException;
+import java.util.concurrent.CompletionStage;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @Produces(MediaType.APPLICATION_JSON)
-public interface TodoResource {
+public interface TodoAsyncResource {
 
     @GET
     @Path("/")
-    Response keys();
+    CompletionStage<Response> keys();
 
     @GET
     @Path("/{id}")
-    Response detail(@PathParam("id") Integer id);
+    CompletionStage<Response> detail(@PathParam("id") Integer id);
 
     @POST
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response post(@RequestBody TodoTask task) throws URISyntaxException;
+    CompletionStage<Response> post(@RequestBody TodoTask task) throws URISyntaxException;
 
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response put(@PathParam("id") Integer id, @RequestBody TodoTask task);
+    CompletionStage<Response> put(@PathParam("id") Integer id, @RequestBody TodoTask task);
 
     @DELETE
     @Path("/{id}")
-    Response delete(@PathParam("id") Integer id);
+    CompletionStage<Response> delete(@PathParam("id") Integer id);
 }
