@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  workflow: write
 
 jobs:
   update_pr_labels:
