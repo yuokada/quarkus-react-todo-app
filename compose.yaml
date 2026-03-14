@@ -15,5 +15,13 @@ services:
       - valkey-data:/data
     command: ["valkey-server", "--appendonly", "yes"]
 
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: quarkus-react-todo-dynamodb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+
 volumes:
   valkey-data:
