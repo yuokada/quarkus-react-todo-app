@@ -1,3 +1,4 @@
+---
 services:
   valkey:
     image: valkey/valkey:7.2.12
