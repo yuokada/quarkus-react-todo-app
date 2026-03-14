@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "biome:lint": "biome lint --write ./src",
+    "biome:lint": "biome lint ./src",
+    "biome:check": "biome check ./src",
     "biome:format": "biome format --write ./src",
     "dev": "vite",
     "build": "vite build",
