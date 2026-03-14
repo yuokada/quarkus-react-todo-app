@@ -8,7 +8,7 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 public class RedisTestResource implements QuarkusTestResourceLifecycleManager {
 
-    private static final String VALKEY_IMAGE = "valkey/valkey:7.2.12";
+    private static final String VALKEY_IMAGE = "valkey/valkey:9.0.3";
 
     private RedisContainer redis;
 
