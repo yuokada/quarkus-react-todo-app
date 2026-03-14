@@ -15,6 +15,7 @@ This project combines a Quarkus REST backend with a Vite/React Todo UI using the
 | Backend tests | `./mvnw test` | Uses Redis DevServices or local Redis depending on config. |
 | Package JAR | `./mvnw package` | Artifacts end up in `target/quarkus-app/`. |
 | Native build | `./mvnw package -Pnative` | Add `-Dquarkus.native.container-build=true` to build via container. |
+| Start local Valkey | `docker compose up -d` | Exposes Valkey on `localhost:6379` for local dev. |
 | Frontend lint/check | `cd src/main/webui && npm run biome:check` | Runs Biome without modifying files. |
 | Frontend dev only | `cd src/main/webui && npm run dev` | Runs Vite standalone (default port 5173). |
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
@@ -57,6 +58,7 @@ see also: http://localhost:8080/q/swagger-ui/
 ## Redis Usage
 - **DevServices**: Leaving `%dev.quarkus.redis.hosts` commented lets Quarkus start Redis automatically in dev/test.
 - **Local Redis**: Set `%dev.quarkus.redis.hosts=redis://localhost:6379/0` to reuse an existing instance.
+- **Docker Compose**: `docker compose up -d` starts the local Valkey container defined in [`compose.yaml`](compose.yaml); stop it with `docker compose down`.
 - Seed scripts (`users.redis`, `test-task.redis`) help bootstrap data when needed.
 
 ## Testing

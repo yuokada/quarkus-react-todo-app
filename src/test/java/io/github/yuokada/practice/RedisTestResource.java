@@ -7,11 +7,13 @@ import org.testcontainers.utility.DockerImageName;
 
 public class RedisTestResource implements QuarkusTestResourceLifecycleManager {
 
+    private static final String VALKEY_IMAGE = "valkey/valkey:7.2.12";
+
     private RedisContainer redis;
 
     @Override
     public Map<String, String> start() {
-        redis = new RedisContainer(DockerImageName.parse("valkey/valkey:7.2.11"));
+        redis = new RedisContainer(DockerImageName.parse(VALKEY_IMAGE));
         redis.start();
         return Map.of(
             "quarkus.redis.hosts", redis.getRedisURI(),
