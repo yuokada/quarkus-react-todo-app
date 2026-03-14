@@ -39,14 +39,10 @@ public class TodoService {
     }
 
     public TodoTask create(TodoTask task) {
-        try {
-            Integer nextId = nextId();
-            TodoTask newTask = new TodoTask(nextId, task.title(), task.isCompleted());
-            todoCommands.set(nextId.toString(), newTask);
-            return newTask;
-        } catch (Exception e) {
-            return null;
-        }
+        Integer nextId = nextId();
+        TodoTask newTask = new TodoTask(nextId, task.title(), task.isCompleted());
+        todoCommands.set(nextId.toString(), newTask);
+        return newTask;
     }
 
     private Integer nextId() {

@@ -24,13 +24,9 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
     @Override
     public CompletionStage<Response> keys() {
         var result = service.tasks();
-        // Wrap the result with CompletionStage<Response>
         return result.onItem()
             .transform(list -> Response.ok(list).build())
-            .subscribeAsCompletionStage()
-            .exceptionally(ex -> {
-                throw new RuntimeException(ex);
-            });
+            .subscribeAsCompletionStage();
     }
 
     @Override
@@ -41,10 +37,7 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
                     return Response.status(Response.Status.NOT_FOUND).build();
                 }
                 return Response.ok(todoTask).build();
-            }).subscribeAsCompletionStage()
-            .exceptionally(ex -> {
-                throw new RuntimeException(ex);
-            });
+            }).subscribeAsCompletionStage();
     }
 
     @Override
@@ -56,10 +49,7 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
                 } catch (URISyntaxException e) {
                     return Response.status(201).entity(todoTask).build();
                 }
-            }
-        ).exceptionally(ex -> {
-            throw new RuntimeException(ex);
-        });
+            });
     }
 
     @Override
@@ -70,9 +60,7 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
             return Response.ok(todoTask).build();
-        }).subscribeAsCompletionStage().exceptionally(ex -> {
-            throw new RuntimeException(ex);
-        });
+        }).subscribeAsCompletionStage();
     }
 
     @Override
@@ -80,10 +68,6 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
         return service.delete(id)
             .thenApply(deleteResult -> deleteResult
                 ? Response.noContent().build()
-                : Response.status(Response.Status.NOT_FOUND).build())
-            .exceptionally(ex -> {
-                // Handle ExecutionException and InterruptedException in a fluent way
-                throw new RuntimeException(ex);
-            });
+                : Response.status(Response.Status.NOT_FOUND).build());
     }
 }
