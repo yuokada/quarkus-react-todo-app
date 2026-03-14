@@ -1,13 +1,13 @@
 package io.github.yuokada.practice;
 
+import java.util.List;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import io.smallrye.mutiny.Uni;
-import jakarta.enterprise.context.ApplicationScoped;
-import java.util.List;
 
 @ApplicationScoped
 public class IncrementService {
@@ -41,8 +41,7 @@ public class IncrementService {
     }
 
     Uni<Void> del(String key) {
-        return keyCommands.del(key)
-            .replaceWithVoid();
+        return keyCommands.del(key).replaceWithVoid();
     }
 
     Uni<List<String>> keys() {

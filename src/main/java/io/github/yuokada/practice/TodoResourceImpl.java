@@ -1,13 +1,13 @@
 package io.github.yuokada.practice;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @ApplicationScoped

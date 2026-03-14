@@ -1,9 +1,10 @@
 package io.github.yuokada.practice;
 
-import com.redis.testcontainers.RedisContainer;
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.util.Map;
+
+import com.redis.testcontainers.RedisContainer;
 import org.testcontainers.utility.DockerImageName;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 public class RedisTestResource implements QuarkusTestResourceLifecycleManager {
 
@@ -16,11 +17,10 @@ public class RedisTestResource implements QuarkusTestResourceLifecycleManager {
         redis = new RedisContainer(DockerImageName.parse(VALKEY_IMAGE));
         redis.start();
         return Map.of(
-            "quarkus.redis.hosts", redis.getRedisURI(),
-            "quarkus.redis.load-script", "test-task.redis",
-            "quarkus.redis.flush-before-load", "true",
-            "quarkus.redis.devservices.enabled", "false"
-        );
+                "quarkus.redis.hosts", redis.getRedisURI(),
+                "quarkus.redis.load-script", "test-task.redis",
+                "quarkus.redis.flush-before-load", "true",
+                "quarkus.redis.devservices.enabled", "false");
     }
 
     @Override

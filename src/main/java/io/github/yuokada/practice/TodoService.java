@@ -1,12 +1,13 @@
 package io.github.yuokada.practice;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class TodoService {
@@ -25,9 +26,9 @@ public class TodoService {
     public List<TodoTask> tasks() {
         List<String> keys = keyCommands.keys("*");
         return keys.stream()
-            .filter(k -> k.matches("^\\d+$"))
-            .map(this::task)
-            .collect(Collectors.toList());
+                .filter(k -> k.matches("^\\d+$"))
+                .map(this::task)
+                .collect(Collectors.toList());
     }
 
     private TodoTask task(String id) {

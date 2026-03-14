@@ -13,6 +13,8 @@
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.30.8</quarkus.platform.version>
+    <google-java-format.version>1.35.0</google-java-format.version>
+    <spotless-maven-plugin.version>3.3.0</spotless-maven-plugin.version>
     <surefire-plugin.version>3.5.5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
@@ -128,6 +130,36 @@
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${spotless-maven-plugin.version}</version>
+        <configuration>
+          <java>
+            <excludes>
+              <exclude>**/target/**</exclude>
+            </excludes>
+            <googleJavaFormat>
+              <version>${google-java-format.version}</version>
+              <style>AOSP</style>
+              <formatJavadoc>false</formatJavadoc>
+            </googleJavaFormat>
+            <importOrder>
+              <order>java|jakarta|org.eclipse,com|org|picocli|io,,io.github.yuokada,\#</order>
+              <semanticSort>true</semanticSort>
+            </importOrder>
+            <removeUnusedImports />
+            <forbidWildcardImports />
+          </java>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
