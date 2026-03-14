@@ -15,6 +15,7 @@ This project combines a Quarkus REST backend with a Vite/React Todo UI using the
 | Backend tests | `./mvnw test` | Uses Redis DevServices or local Redis depending on config. |
 | Package JAR | `./mvnw package` | Artifacts end up in `target/quarkus-app/`. |
 | Native build | `./mvnw package -Pnative` | Add `-Dquarkus.native.container-build=true` to build via container. |
+| Frontend lint/check | `cd src/main/webui && npm run biome:check` | Runs Biome without modifying files. |
 | Frontend dev only | `cd src/main/webui && npm run dev` | Runs Vite standalone (default port 5173). |
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
 | Build container image (Jib) | `./mvnw package -Dquarkus.container-image.build=true` | Produces an OCI image via Jib; append `-Dquarkus.container-image.push=true` to push. |
