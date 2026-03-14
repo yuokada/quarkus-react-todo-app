@@ -2,63 +2,58 @@ package io.github.yuokada.practice;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.RepeatedTest;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @QuarkusTest
 @QuarkusTestResource(RedisTestResource.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TodoResourceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(TodoResourceTest.class);
+    private static final int NON_EXISTENT_ID = 99_999;
 
-    @Order(1)
-    @RepeatedTest(3)
+    @Test
     void keys() {
+        TodoTask createdTask = createTodo("sync keys task");
+
         given().accept(ContentType.JSON)
             .when()
             .get("/api/todos/")
             .then()
             .statusCode(200)
-            .body("size()", greaterThanOrEqualTo(3));
+            .body("size()", greaterThanOrEqualTo(1))
+            .body("id", hasItem(createdTask.id()));
     }
 
-    @Order(2)
     @Test
     void detail() {
+        TodoTask createdTask = createTodo("sync detail task");
+
         given().accept(ContentType.JSON)
             .when()
-            .get("/api/todos/4")
+            .get("/api/todos/%d".formatted(createdTask.id()))
             .then()
             .statusCode(200)
-            .body("id", is(4))
+            .body("id", is(createdTask.id()))
+            .body("title", is("sync detail task"))
             .body("completed", is(false));
     }
 
-    @Order(3)
     @Test
     void detailNonExistId() {
         given().accept(ContentType.JSON)
             .when()
-            .get("/api/todos/99999")
+            .get("/api/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
     }
 
-    @Order(4)
-    @RepeatedTest(5)
+    @Test
     void post() {
         given()
             .contentType(ContentType.JSON)
@@ -68,10 +63,10 @@ class TodoResourceTest {
             .post("/api/todos/")
             .then()
             .statusCode(201)
+            .body("title", is("new task from sync API"))
             .body("completed", is(false));
     }
 
-    @Order(5)
     @Test
     void postWithInvalidBody() {
         given()
@@ -84,22 +79,23 @@ class TodoResourceTest {
             .statusCode(400);
     }
 
-    @Order(6)
-    @RepeatedTest(2)
+    @Test
     void put() {
+        TodoTask createdTask = createTodo("sync update task");
+
         given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
             .body("{\"title\":\"updated sync task\",\"completed\":true}")
             .when()
-            .put("/api/todos/8")
+            .put("/api/todos/%d".formatted(createdTask.id()))
             .then()
             .statusCode(200)
-            .body("id", is(8))
+            .body("id", is(createdTask.id()))
+            .body("title", is("updated sync task"))
             .body("completed", is(true));
     }
 
-    @Order(7)
     @Test
     void putToNonExistId() {
         given()
@@ -107,40 +103,41 @@ class TodoResourceTest {
             .accept(ContentType.JSON)
             .body("{\"title\":\"missing sync task\",\"completed\":true}")
             .when()
-            .put("/api/todos/99999")
+            .put("/api/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
     }
 
-    @Order(8)
     @Test
-    @DisplayName("(Flaky test) Delete existing ID should return 204 No Content")
     void delete() {
-        List<TodoTask> response = given().when()
-            .get("/api/todos/").as(new io.restassured.common.mapper.TypeRef<>() {
-            });
-        response.forEach(task -> {
-            log.debug(task.toString());
-        });
-        TodoTask firstTask = response.stream().findFirst().orElseThrow(() ->
-            new IllegalStateException("No TodoTask available to delete.")
-        );
+        TodoTask createdTask = createTodo("sync delete task");
+
         given()
             .when()
-            .delete("/api/todos/%d".formatted(firstTask.id()))
+            .delete("/api/todos/%d".formatted(createdTask.id()))
             .then()
             .statusCode(204);
-
     }
 
-    @Order(9)
     @Test
     void deleteNonExistId() {
-        int nonExistId = 99999;
         given()
             .when()
-            .delete("/api/todos/%d".formatted(nonExistId))
+            .delete("/api/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
+    }
+
+    private TodoTask createTodo(String title) {
+        return given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .body(Map.of("title", title))
+            .when()
+            .post("/api/todos/")
+            .then()
+            .statusCode(201)
+            .extract()
+            .as(TodoTask.class);
     }
 }
