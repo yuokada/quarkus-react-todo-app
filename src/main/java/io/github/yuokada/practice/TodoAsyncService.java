@@ -1,10 +1,7 @@
 package io.github.yuokada.practice;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -52,42 +49,37 @@ public class TodoAsyncService {
                 .onItem()
                 .transformToMulti(keys -> Multi.createFrom().items(keys.stream()))
                 .onItem()
-                .transformToUniAndMerge(todoCommands::get) // 各キーに対して非同期取得
+                .transformToUniAndConcatenate(todoCommands::get)
                 .onItem()
                 .invoke(task -> logger.infof("Task detail: %s", task))
                 .collect()
-                .asList();
+                .asList()
+                .onItem()
+                .transform(
+                        tasks ->
+                                tasks.stream()
+                                        .sorted(Comparator.comparingInt(TodoTask::id))
+                                        .collect(Collectors.toList()));
     }
 
-    public CompletionStage<TodoTask> create(TodoTask task) {
-        return nextId().thenApply(
+    public Uni<TodoTask> create(TodoTask task) {
+        return nextId().onItem()
+                .transform(
                         nextId -> {
                             logger.infof("Next ID: %d", nextId);
                             return new TodoTask(nextId, task.title(), task.isCompleted());
                         })
-                .thenCompose(
+                .onItem()
+                .transformToUni(
                         newTask ->
                                 todoCommands
                                         .set(newTask.id().toString(), newTask)
-                                        .subscribeAsCompletionStage()
-                                        .thenApply(
-                                                v -> {
-                                                    logger.info("Task created");
-                                                    return newTask;
-                                                }))
-                .thenCompose(
-                        newTask ->
-                                todoCommands
-                                        .get(newTask.id().toString())
-                                        .subscribeAsCompletionStage()
-                                        .toCompletableFuture());
+                                        .replaceWith(newTask)
+                                        .invoke(() -> logger.info("Task created")));
     }
 
-    private CompletionStage<Integer> nextId() {
-        return todoCommands
-                .incrby(ID_KEY, 2)
-                .subscribeAsCompletionStage()
-                .thenApply(Long::intValue);
+    private Uni<Integer> nextId() {
+        return todoCommands.incrby(ID_KEY, 2).map(Long::intValue);
     }
 
     public Uni<TodoTask> updateAsync(Integer id, TodoTask task) {
@@ -107,17 +99,7 @@ public class TodoAsyncService {
                         });
     }
 
-    public CompletableFuture<Boolean> delete(Integer id) {
-        Uni<Boolean> uniResult = keyCommands.del(id.toString()).map(l -> l == 1L);
-        return uniResult
-                .subscribeAsCompletionStage()
-                .exceptionally(
-                        ex -> {
-                            if (ex instanceof ExecutionException
-                                    || ex instanceof InterruptedException) {
-                                throw new RuntimeException(ex);
-                            }
-                            throw new CompletionException(ex);
-                        });
+    public Uni<Boolean> delete(Integer id) {
+        return keyCommands.del(id.toString()).map(l -> l == 1L);
     }
 }

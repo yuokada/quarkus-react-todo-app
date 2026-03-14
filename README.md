@@ -76,6 +76,8 @@ see also: http://localhost:8080/q/swagger-ui/
 
 - RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): Build reactive REST services with Quarkus.
 - Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Develop, build, and serve SPA frontends alongside Quarkus services.
+- Reactive return type notes: [`docs/reactive-return-types.md`](docs/reactive-return-types.md)
+- Redis reactive tutorial: [`docs/redis-reactive-tutorial.md`](docs/redis-reactive-tutorial.md)
 
 Live code the backend and frontend together with minimal configuration—Quinoa proxies the framework dev server during development and serves the generated assets in production.
 
