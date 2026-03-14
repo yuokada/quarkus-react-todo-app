@@ -8,11 +8,14 @@ import static org.hamcrest.Matchers.is;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @QuarkusTestResource(RedisTestResource.class)
 class TodoResourceTest {
+
+    private static final int NON_EXISTENT_ID = 99_999;
 
     @Test
     void keys() {
@@ -99,7 +102,7 @@ class TodoResourceTest {
     void deleteNonExistId() {
         given()
             .when()
-            .delete("/api/todos/99999")
+            .delete("/api/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
     }
@@ -108,7 +111,7 @@ class TodoResourceTest {
         return given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body("{\"title\":\"%s\"}".formatted(title))
+            .body(Map.of("title", title))
             .when()
             .post("/api/todos/")
             .then()

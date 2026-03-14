@@ -8,11 +8,14 @@ import static org.hamcrest.Matchers.is;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @QuarkusTestResource(RedisTestResource.class)
 class TodoAsyncResourceTest {
+
+    private static final int NON_EXISTENT_ID = 100_000;
 
     @Test
     void keys() {
@@ -45,7 +48,7 @@ class TodoAsyncResourceTest {
     void detailNonExistId() {
         given().accept(ContentType.JSON)
             .when()
-            .get("/api/async/todos/99999")
+            .get("/api/async/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
     }
@@ -100,7 +103,7 @@ class TodoAsyncResourceTest {
             .accept(ContentType.JSON)
             .body("{\"title\":\"my dummy task\",\"completed\":false}")
             .when()
-            .put("/api/async/todos/100000")
+            .put("/api/async/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
     }
@@ -120,7 +123,7 @@ class TodoAsyncResourceTest {
     void deleteNonExistId() {
         given()
             .when()
-            .delete("/api/async/todos/100000")
+            .delete("/api/async/todos/%d".formatted(NON_EXISTENT_ID))
             .then()
             .statusCode(404);
     }
@@ -129,7 +132,7 @@ class TodoAsyncResourceTest {
         return given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body("{\"title\":\"%s\"}".formatted(title))
+            .body(Map.of("title", title))
             .when()
             .post("/api/async/todos")
             .then()
