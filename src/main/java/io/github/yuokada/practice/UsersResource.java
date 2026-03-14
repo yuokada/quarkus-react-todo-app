@@ -6,22 +6,21 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.RedisDataSource;
-import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
+import io.quarkus.redis.datasource.keys.KeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
 
 @Deprecated
 @ApplicationScoped
 public class UsersResource {
 
-    private final ReactiveKeyCommands<String> keyCommands;
+    private final KeyCommands<String> keyCommands;
     private final ValueCommands<String, Long> countCommands;
 
     @Inject
-    public UsersResource(RedisDataSource ds, ReactiveRedisDataSource reactive) {
+    public UsersResource(RedisDataSource ds) {
         countCommands = ds.value(Long.class);
-        keyCommands = reactive.key();
+        keyCommands = ds.key();
     }
 
     public void incrementUserCount() {
@@ -31,15 +30,7 @@ public class UsersResource {
 
     public List<Users> getUsers() {
         try {
-            // "user:*"にマッチするすべてのキーを取得する
-            List<String> keys =
-                    keyCommands
-                            .keys("user:*")
-                            .subscribeAsCompletionStage()
-                            .toCompletableFuture()
-                            .get(); // 非同期処理が完了するまで待機
-
-            // 結果を処理してUsersオブジェクトのリストを作成する
+            List<String> keys = keyCommands.keys("user:*");
             List<Users> users = new ArrayList<>();
             for (String key : keys) {
                 Long value = countCommands.get(key);

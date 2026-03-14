@@ -47,7 +47,8 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
     @Override
     public CompletionStage<Response> post(TodoTask task) {
         return service.create(task)
-                .thenApply(
+                .onItem()
+                .transform(
                         todoTask -> {
                             try {
                                 URI u = new URI("/api/async/todos/" + todoTask.id());
@@ -55,7 +56,8 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
                             } catch (URISyntaxException e) {
                                 return Response.status(201).entity(todoTask).build();
                             }
-                        });
+                        })
+                .subscribeAsCompletionStage();
     }
 
     @Override
@@ -76,10 +78,12 @@ public class TodoAsyncResourceImpl implements TodoAsyncResource {
     @Override
     public CompletionStage<Response> delete(Integer id) {
         return service.delete(id)
-                .thenApply(
+                .onItem()
+                .transform(
                         deleteResult ->
                                 deleteResult
                                         ? Response.noContent().build()
-                                        : Response.status(Response.Status.NOT_FOUND).build());
+                                        : Response.status(Response.Status.NOT_FOUND).build())
+                .subscribeAsCompletionStage();
     }
 }
