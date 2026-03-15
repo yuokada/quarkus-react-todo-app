@@ -4,10 +4,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 
 import org.jboss.logging.Logger;
-import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ReactiveValueCommands;
@@ -17,7 +17,7 @@ import io.smallrye.mutiny.Uni;
 import io.github.yuokada.practice.domain.model.TodoTask;
 import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
 
-@LookupIfProperty(name = "app.repository.type", stringValue = "redis")
+@Typed(RedisTodoAsyncRepository.class)
 @ApplicationScoped
 public class RedisTodoAsyncRepository implements TodoAsyncRepository {
 

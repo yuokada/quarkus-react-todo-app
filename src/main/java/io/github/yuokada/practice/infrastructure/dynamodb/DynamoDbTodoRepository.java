@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import io.quarkus.arc.lookup.LookupIfProperty;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -22,7 +21,7 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import io.github.yuokada.practice.domain.model.TodoTask;
 import io.github.yuokada.practice.domain.repository.TodoRepository;
 
-@LookupIfProperty(name = "app.repository.type", stringValue = "dynamodb")
+@Typed(DynamoDbTodoRepository.class)
 @ApplicationScoped
 public class DynamoDbTodoRepository implements TodoRepository {
 

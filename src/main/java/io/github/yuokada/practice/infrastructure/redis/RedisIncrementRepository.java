@@ -2,9 +2,9 @@ package io.github.yuokada.practice.infrastructure.redis;
 
 import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 
-import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
@@ -13,7 +13,7 @@ import io.smallrye.mutiny.Uni;
 
 import io.github.yuokada.practice.domain.repository.IncrementRepository;
 
-@LookupIfProperty(name = "app.repository.type", stringValue = "redis")
+@Typed(RedisIncrementRepository.class)
 @ApplicationScoped
 public class RedisIncrementRepository implements IncrementRepository {
 
