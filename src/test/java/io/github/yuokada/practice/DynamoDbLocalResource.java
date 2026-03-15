@@ -23,6 +23,8 @@ import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManager {
 
     private static final String IMAGE = "amazon/dynamodb-local:3.3.0";
+    private static final String TABLE_TODO = "todo_tasks";
+    private static final String TABLE_COUNTER = "app_counters";
 
     @SuppressWarnings("resource")
     private final GenericContainer<?> container =
@@ -41,7 +43,12 @@ public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManage
                                 })
                         .thenApply(
                                 ep -> {
-                                    createTables(ep);
+                                    try {
+                                        createTables(ep);
+                                    } catch (Exception e) {
+                                        container.stop();
+                                        throw e;
+                                    }
                                     return ep;
                                 })
                         .join();
@@ -73,7 +80,7 @@ public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManage
                 // todo_tasks table — partition key: id (Number)
                 client.createTable(
                         CreateTableRequest.builder()
-                                .tableName("todo_tasks")
+                                .tableName(TABLE_TODO)
                                 .attributeDefinitions(
                                         AttributeDefinition.builder()
                                                 .attributeName("id")
@@ -87,12 +94,12 @@ public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManage
                                 .billingMode(BillingMode.PAY_PER_REQUEST)
                                 .build());
                 waiter.waitUntilTableExists(
-                        DescribeTableRequest.builder().tableName("todo_tasks").build());
+                        DescribeTableRequest.builder().tableName(TABLE_TODO).build());
 
                 // app_counters table — partition key: counterName (String)
                 client.createTable(
                         CreateTableRequest.builder()
-                                .tableName("app_counters")
+                                .tableName(TABLE_COUNTER)
                                 .attributeDefinitions(
                                         AttributeDefinition.builder()
                                                 .attributeName("counterName")
@@ -106,7 +113,7 @@ public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManage
                                 .billingMode(BillingMode.PAY_PER_REQUEST)
                                 .build());
                 waiter.waitUntilTableExists(
-                        DescribeTableRequest.builder().tableName("app_counters").build());
+                        DescribeTableRequest.builder().tableName(TABLE_COUNTER).build());
             }
         }
     }
