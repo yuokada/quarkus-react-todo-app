@@ -32,13 +32,21 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
 
     private static final String TODO_ID_COUNTER = "todo_id";
 
-    @Inject DynamoDbAsyncClient client;
+    private final DynamoDbAsyncClient client;
+    private final String todoTable;
+    private final String counterTable;
 
-    @ConfigProperty(name = "app.dynamodb.table.todo", defaultValue = "todo_tasks")
-    String todoTable;
-
-    @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
-    String counterTable;
+    @Inject
+    public DynamoDbTodoAsyncRepository(
+            DynamoDbAsyncClient client,
+            @ConfigProperty(name = "app.dynamodb.table.todo", defaultValue = "todo_tasks")
+                    String todoTable,
+            @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
+                    String counterTable) {
+        this.client = client;
+        this.todoTable = todoTable;
+        this.counterTable = counterTable;
+    }
 
     @Override
     public Uni<List<TodoTask>> findAll() {

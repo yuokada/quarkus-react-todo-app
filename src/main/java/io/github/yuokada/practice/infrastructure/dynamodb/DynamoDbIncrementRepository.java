@@ -32,12 +32,20 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
     // Keys used internally by the application, excluded from keys()
     private static final Set<String> INTERNAL_KEYS = Set.of("todo_id");
 
-    @Inject DynamoDbClient client;
+    private final DynamoDbClient client;
+    private final DynamoDbAsyncClient asyncClient;
+    private final String counterTable;
 
-    @Inject DynamoDbAsyncClient asyncClient;
-
-    @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
-    String counterTable;
+    @Inject
+    public DynamoDbIncrementRepository(
+            DynamoDbClient client,
+            DynamoDbAsyncClient asyncClient,
+            @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
+                    String counterTable) {
+        this.client = client;
+        this.asyncClient = asyncClient;
+        this.counterTable = counterTable;
+    }
 
     @Override
     public long get(String key) {
