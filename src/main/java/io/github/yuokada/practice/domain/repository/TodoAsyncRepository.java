@@ -1,8 +1,10 @@
 package io.github.yuokada.practice.domain.repository;
 
-import io.github.yuokada.practice.domain.model.TodoTask;
-import io.smallrye.mutiny.Uni;
 import java.util.List;
+
+import io.smallrye.mutiny.Uni;
+
+import io.github.yuokada.practice.domain.model.TodoTask;
 
 public interface TodoAsyncRepository {
 

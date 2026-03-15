@@ -1,11 +1,13 @@
 package io.github.yuokada.practice.application.service;
 
-import io.github.yuokada.practice.domain.model.TodoTask;
-import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
-import io.smallrye.mutiny.Uni;
+import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.List;
+
+import io.smallrye.mutiny.Uni;
+
+import io.github.yuokada.practice.domain.model.TodoTask;
+import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
 
 @ApplicationScoped
 public class TodoAsyncService {

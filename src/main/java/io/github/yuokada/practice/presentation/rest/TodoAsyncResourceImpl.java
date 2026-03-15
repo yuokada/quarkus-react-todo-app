@@ -1,15 +1,17 @@
 package io.github.yuokada.practice.presentation.rest;
 
-import io.github.yuokada.practice.application.service.TodoAsyncService;
-import io.github.yuokada.practice.domain.model.TodoTask;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.CompletionStage;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.CompletionStage;
+
 import org.jboss.logging.Logger;
+
+import io.github.yuokada.practice.application.service.TodoAsyncService;
+import io.github.yuokada.practice.domain.model.TodoTask;
 
 @ApplicationScoped
 @Path("/api/async/todos")

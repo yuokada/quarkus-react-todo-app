@@ -1,15 +1,19 @@
 package io.github.yuokada.practice.infrastructure.redis;
 
-import io.github.yuokada.practice.domain.repository.IncrementRepository;
+import java.util.List;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Inject;
+
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import io.smallrye.mutiny.Uni;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import java.util.List;
 
+import io.github.yuokada.practice.domain.repository.IncrementRepository;
+
+@Typed(RedisIncrementRepository.class)
 @ApplicationScoped
 public class RedisIncrementRepository implements IncrementRepository {
 

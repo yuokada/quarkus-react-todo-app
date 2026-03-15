@@ -1,19 +1,23 @@
 package io.github.yuokada.practice.infrastructure.redis;
 
-import io.github.yuokada.practice.domain.model.TodoTask;
-import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Inject;
+
+import org.jboss.logging.Logger;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ReactiveValueCommands;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.jboss.logging.Logger;
 
+import io.github.yuokada.practice.domain.model.TodoTask;
+import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
+
+@Typed(RedisTodoAsyncRepository.class)
 @ApplicationScoped
 public class RedisTodoAsyncRepository implements TodoAsyncRepository {
 
@@ -65,12 +69,12 @@ public class RedisTodoAsyncRepository implements TodoAsyncRepository {
 
     @Override
     public Uni<TodoTask> create(TodoTask task) {
-        return nextId()
-                .onItem()
+        return nextId().onItem()
                 .transform(
                         nextId -> {
                             logger.infof("Next ID: %d", nextId);
-                            return new TodoTask(nextId, task.title(), task.isCompleted());
+                            long now = System.currentTimeMillis();
+                            return new TodoTask(nextId, task.title(), task.isCompleted(), now, now);
                         })
                 .onItem()
                 .transformToUni(
@@ -95,7 +99,12 @@ public class RedisTodoAsyncRepository implements TodoAsyncRepository {
                                 return Uni.createFrom().nullItem();
                             }
                             TodoTask updatedTask =
-                                    new TodoTask(id, task.title(), task.isCompleted());
+                                    new TodoTask(
+                                            id,
+                                            task.title(),
+                                            task.isCompleted(),
+                                            currentTask.createdAt(),
+                                            System.currentTimeMillis());
                             return todoCommands
                                     .set(id.toString(), updatedTask)
                                     .onItem()
