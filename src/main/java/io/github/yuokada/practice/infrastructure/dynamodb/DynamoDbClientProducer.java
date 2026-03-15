@@ -9,6 +9,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.arc.lookup.LookupIfProperty;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
@@ -21,7 +22,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @ApplicationScoped
 public class DynamoDbClientProducer {
 
-    private static final String DUMMY_CREDENTIAL = "dummy";
+    private static final AwsCredentialsProvider DUMMY_CREDENTIALS =
+            StaticCredentialsProvider.create(AwsBasicCredentials.create("dummy", "dummy"));
 
     @ConfigProperty(name = "app.dynamodb.region", defaultValue = "ap-northeast-1")
     String region;
@@ -55,9 +57,6 @@ public class DynamoDbClientProducer {
         endpointOverride.ifPresent(
                 ep ->
                         builder.endpointOverride(URI.create(ep))
-                                .credentialsProvider(
-                                        StaticCredentialsProvider.create(
-                                                AwsBasicCredentials.create(
-                                                        DUMMY_CREDENTIAL, DUMMY_CREDENTIAL))));
+                                .credentialsProvider(DUMMY_CREDENTIALS));
     }
 }
