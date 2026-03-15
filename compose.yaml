@@ -16,7 +16,7 @@ services:
     command: ["valkey-server", "--appendonly", "yes"]
 
   dynamodb-local:
-    image: amazon/dynamodb-local:2.4.0
+    image: amazon/dynamodb-local:2.6.1
     container_name: quarkus-react-todo-dynamodb
     restart: unless-stopped
     ports:
