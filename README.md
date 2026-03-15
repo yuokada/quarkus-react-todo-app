@@ -19,6 +19,8 @@ The backend now follows a simple Clean Architecture-style package split.
   Contains use-case services like `TodoService`, `TodoAsyncService`, and `IncrementService`. These services depend on repository interfaces, not on Redis-specific implementations.
 - `io.github.yuokada.practice.infrastructure.redis`
   Contains Redis-backed implementations such as `RedisTodoRepository`, `RedisTodoAsyncRepository`, and `RedisIncrementRepository`. Quarkus Redis datasource access is isolated here.
+- `io.github.yuokada.practice.infrastructure.dynamodb`
+  Contains DynamoDB-backed implementations such as `DynamoDbTodoRepository`, `DynamoDbTodoAsyncRepository`, `DynamoDbIncrementRepository`, and `DynamoDbClientProducer`. AWS SDK v2 access is isolated here.
 - `io.github.yuokada.practice.presentation.rest`
   Contains JAX-RS resource interfaces and implementations such as `TodoResourceImpl`, `TodoAsyncResourceImpl`, and `IncrementResource`. This layer maps HTTP requests and responses to application services.
 
@@ -35,7 +37,9 @@ In practice, this means REST resources do not talk to Redis directly, and applic
 | Backend tests | `./mvnw test` | Uses Redis DevServices or local Redis depending on config. |
 | Package JAR | `./mvnw package` | Artifacts end up in `target/quarkus-app/`. |
 | Native build | `./mvnw package -Pnative` | Add `-Dquarkus.native.container-build=true` to build via container. |
-| Start local Valkey | `docker compose up -d` | Exposes Valkey on `localhost:6379` for local dev. |
+| Start local Valkey | `docker compose up valkey -d` | Exposes Valkey on `localhost:6379` for local dev. |
+| Start DynamoDB Local | `docker compose up dynamodb-local -d` | Exposes DynamoDB Local on `localhost:8000`. |
+| Init DynamoDB tables | `./scripts/init-dynamodb.sh` | Creates `todo_tasks` and `app_counters` tables. Requires AWS CLI. |
 | Frontend lint/check | `cd src/main/webui && npm run biome:check` | Runs Biome without modifying files. |
 | Frontend dev only | `cd src/main/webui && npm run dev` | Runs Vite standalone (default port 5173). |
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
@@ -74,6 +78,26 @@ see also: http://localhost:8080/q/swagger-ui/
 - `App.jsx` implements list rendering, creation form, completion toggles, and deletion, all backed by fetch calls to `/api/todos`.
 - `App.css` provides a lightweight card-style layout with responsive tweaks.
 - Error/loading states feed back to the UI via status messages.
+
+## Backend Selection
+
+The backend storage can be switched at runtime via `app.repository.type` in `application.properties`.
+
+| Value | Backend |
+| --- | --- |
+| `redis` (default) | Valkey/Redis |
+| `dynamodb` | DynamoDB (or DynamoDB Local) |
+
+To use DynamoDB Local in dev mode:
+```properties
+%dev.app.repository.type=dynamodb
+%dev.app.dynamodb.endpoint-override=http://localhost:8000
+```
+
+Steps:
+1. `docker compose up dynamodb-local -d`
+2. `./scripts/init-dynamodb.sh`
+3. `./mvnw compile quarkus:dev`
 
 ## Redis Usage
 - **DevServices**: Leaving `%dev.quarkus.redis.hosts` commented lets Quarkus start Redis automatically in dev/test.
