@@ -10,6 +10,7 @@ import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import io.quarkus.arc.lookup.LookupIfProperty;
 import io.smallrye.mutiny.Uni;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
@@ -24,6 +25,7 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 import io.github.yuokada.practice.domain.model.TodoTask;
 import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
 
+@LookupIfProperty(name = "app.repository.type", stringValue = "dynamodb")
 @Typed(DynamoDbTodoAsyncRepository.class)
 @ApplicationScoped
 public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {

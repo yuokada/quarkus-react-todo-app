@@ -9,8 +9,10 @@ import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import io.quarkus.arc.lookup.LookupIfProperty;
 import io.smallrye.mutiny.Uni;
 
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
@@ -22,6 +24,7 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import io.github.yuokada.practice.domain.repository.IncrementRepository;
 
+@LookupIfProperty(name = "app.repository.type", stringValue = "dynamodb")
 @Typed(DynamoDbIncrementRepository.class)
 @ApplicationScoped
 public class DynamoDbIncrementRepository implements IncrementRepository {
@@ -30,6 +33,8 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
     private static final Set<String> INTERNAL_KEYS = Set.of("todo_id");
 
     @Inject DynamoDbClient client;
+
+    @Inject DynamoDbAsyncClient asyncClient;
 
     @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
     String counterTable;
@@ -78,27 +83,23 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
     @Override
     public Uni<Void> delete(String key) {
         return Uni.createFrom()
-                .item(
-                        () -> {
-                            client.deleteItem(
-                                    DeleteItemRequest.builder()
-                                            .tableName(counterTable)
-                                            .key(Map.of("counterName", AttributeValue.fromS(key)))
-                                            .build());
-                            return null;
-                        })
+                .completionStage(
+                        asyncClient.deleteItem(
+                                DeleteItemRequest.builder()
+                                        .tableName(counterTable)
+                                        .key(Map.of("counterName", AttributeValue.fromS(key)))
+                                        .build()))
                 .replaceWithVoid();
     }
 
     @Override
     public Uni<List<String>> keys() {
         return Uni.createFrom()
-                .item(
-                        () ->
-                                client
-                                        .scan(ScanRequest.builder().tableName(counterTable).build())
-                                        .items()
-                                        .stream()
+                .completionStage(
+                        asyncClient.scan(ScanRequest.builder().tableName(counterTable).build()))
+                .map(
+                        response ->
+                                response.items().stream()
                                         .map(item -> item.get("counterName").s())
                                         .filter(k -> !INTERNAL_KEYS.contains(k))
                                         .collect(Collectors.toList()));
