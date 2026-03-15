@@ -22,7 +22,7 @@ import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
 public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManager {
 
-    private static final String IMAGE = "amazon/dynamodb-local:2.4.0";
+    private static final String IMAGE = "amazon/dynamodb-local:3.3.0";
 
     @SuppressWarnings("resource")
     private final GenericContainer<?> container =
