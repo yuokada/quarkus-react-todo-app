@@ -7,6 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import org.jboss.logging.Logger;
+import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
 import io.quarkus.redis.datasource.value.ReactiveValueCommands;
@@ -16,6 +17,7 @@ import io.smallrye.mutiny.Uni;
 import io.github.yuokada.practice.domain.model.TodoTask;
 import io.github.yuokada.practice.domain.repository.TodoAsyncRepository;
 
+@LookupIfProperty(name = "app.repository.type", stringValue = "redis")
 @ApplicationScoped
 public class RedisTodoAsyncRepository implements TodoAsyncRepository {
 
