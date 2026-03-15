@@ -11,6 +11,8 @@ import io.quarkus.arc.lookup.LookupIfProperty;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -49,6 +51,19 @@ public class DynamoDbClientProducer {
                         .httpClientBuilder(NettyNioAsyncHttpClient.builder());
         applyLocalEndpoint(builder);
         return builder.build();
+    }
+
+    @Produces
+    @ApplicationScoped
+    public DynamoDbEnhancedClient dynamoDbEnhancedClient(DynamoDbClient client) {
+        return DynamoDbEnhancedClient.builder().dynamoDbClient(client).build();
+    }
+
+    @Produces
+    @ApplicationScoped
+    public DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient(
+            DynamoDbAsyncClient asyncClient) {
+        return DynamoDbEnhancedAsyncClient.builder().dynamoDbClient(asyncClient).build();
     }
 
     private void applyLocalEndpoint(AwsClientBuilder<?, ?> builder) {

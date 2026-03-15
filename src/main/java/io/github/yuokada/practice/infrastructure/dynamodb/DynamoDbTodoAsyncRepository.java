@@ -4,22 +4,25 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import io.quarkus.arc.lookup.LookupIfProperty;
 import io.smallrye.mutiny.Uni;
 
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import io.github.yuokada.practice.domain.model.TodoTask;
@@ -32,70 +35,42 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
 
     private static final String TODO_ID_COUNTER = "todo_id";
 
+    private final DynamoDbAsyncTable<TodoTaskItem> todoTable;
     private final DynamoDbAsyncClient client;
-    private final String todoTable;
-    private final String counterTable;
+    private final String counterTableName;
 
     @Inject
     public DynamoDbTodoAsyncRepository(
             DynamoDbAsyncClient client,
+            DynamoDbEnhancedAsyncClient enhancedAsyncClient,
             @ConfigProperty(name = "app.dynamodb.table.todo", defaultValue = "todo_tasks")
-                    String todoTable,
+                    String todoTableName,
             @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
-                    String counterTable) {
+                    String counterTableName) {
         this.client = client;
-        this.todoTable = todoTable;
-        this.counterTable = counterTable;
+        this.counterTableName = counterTableName;
+        this.todoTable = enhancedAsyncClient.table(todoTableName, TodoTaskItem.TABLE_SCHEMA);
     }
 
     @Override
     public Uni<List<TodoTask>> findAll() {
-        return scanAll(null, new ArrayList<>())
+        return Uni.createFrom()
+                .completionStage(collectToList(todoTable.scan().items()))
                 .map(
-                        tasks ->
-                                tasks.stream()
+                        items ->
+                                items.stream()
+                                        .map(TodoTaskItem::toTask)
                                         .sorted(Comparator.comparingInt(TodoTask::id))
                                         .collect(Collectors.toList()));
-    }
-
-    private Uni<List<TodoTask>> scanAll(
-            Map<String, AttributeValue> lastKey, List<TodoTask> accumulated) {
-        var builder = ScanRequest.builder().tableName(todoTable);
-        if (lastKey != null && !lastKey.isEmpty()) {
-            builder.exclusiveStartKey(lastKey);
-        }
-        return Uni.createFrom()
-                .completionStage(client.scan(builder.build()))
-                .flatMap(
-                        response -> {
-                            response.items().stream()
-                                    .map(this::toTodoTask)
-                                    .forEach(accumulated::add);
-                            if (response.lastEvaluatedKey() != null
-                                    && !response.lastEvaluatedKey().isEmpty()) {
-                                return scanAll(response.lastEvaluatedKey(), accumulated);
-                            }
-                            return Uni.createFrom().item(accumulated);
-                        });
     }
 
     @Override
     public Uni<TodoTask> findById(String id) {
         return Uni.createFrom()
                 .completionStage(
-                        client.getItem(
-                                GetItemRequest.builder()
-                                        .tableName(todoTable)
-                                        .key(Map.of("id", AttributeValue.fromN(id)))
-                                        .build()))
-                .map(
-                        response -> {
-                            var item = response.item();
-                            if (item == null || item.isEmpty()) {
-                                return null;
-                            }
-                            return toTodoTask(item);
-                        });
+                        todoTable.getItem(
+                                Key.builder().partitionValue(Integer.parseInt(id)).build()))
+                .map(item -> item == null ? null : item.toTask());
     }
 
     @Override
@@ -107,12 +82,7 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
                                     new TodoTask(
                                             nextId, task.title(), task.isCompleted(), now, now);
                             return Uni.createFrom()
-                                    .completionStage(
-                                            client.putItem(
-                                                    PutItemRequest.builder()
-                                                            .tableName(todoTable)
-                                                            .item(toItem(newTask))
-                                                            .build()))
+                                    .completionStage(todoTable.putItem(TodoTaskItem.from(newTask)))
                                     .map(ignored -> newTask);
                         });
     }
@@ -133,12 +103,7 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
                                             current.createdAt(),
                                             System.currentTimeMillis());
                             return Uni.createFrom()
-                                    .completionStage(
-                                            client.putItem(
-                                                    PutItemRequest.builder()
-                                                            .tableName(todoTable)
-                                                            .item(toItem(updated))
-                                                            .build()))
+                                    .completionStage(todoTable.putItem(TodoTaskItem.from(updated)))
                                     .map(ignored -> updated);
                         });
     }
@@ -146,14 +111,8 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
     @Override
     public Uni<Boolean> delete(Integer id) {
         return Uni.createFrom()
-                .completionStage(
-                        client.deleteItem(
-                                DeleteItemRequest.builder()
-                                        .tableName(todoTable)
-                                        .key(Map.of("id", AttributeValue.fromN(id.toString())))
-                                        .returnValues(ReturnValue.ALL_OLD)
-                                        .build()))
-                .map(response -> response.attributes() != null && !response.attributes().isEmpty());
+                .completionStage(todoTable.deleteItem(Key.builder().partitionValue(id).build()))
+                .map(deleted -> deleted != null);
     }
 
     private Uni<Integer> nextId() {
@@ -161,7 +120,7 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
                 .completionStage(
                         client.updateItem(
                                 UpdateItemRequest.builder()
-                                        .tableName(counterTable)
+                                        .tableName(counterTableName)
                                         .key(
                                                 Map.of(
                                                         "counterName",
@@ -175,21 +134,32 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
                 .map(response -> Integer.parseInt(response.attributes().get("value").n()));
     }
 
-    private Map<String, AttributeValue> toItem(TodoTask task) {
-        return Map.of(
-                "id", AttributeValue.fromN(task.id().toString()),
-                "title", AttributeValue.fromS(task.title()),
-                "completed", AttributeValue.fromBool(task.isCompleted()),
-                "createdAt", AttributeValue.fromN(String.valueOf(task.createdAt())),
-                "updatedAt", AttributeValue.fromN(String.valueOf(task.updatedAt())));
-    }
+    private static <T> CompletableFuture<List<T>> collectToList(Publisher<T> publisher) {
+        CompletableFuture<List<T>> future = new CompletableFuture<>();
+        publisher.subscribe(
+                new Subscriber<T>() {
+                    private final List<T> items = new ArrayList<>();
 
-    private TodoTask toTodoTask(Map<String, AttributeValue> item) {
-        return new TodoTask(
-                Integer.parseInt(item.get("id").n()),
-                item.get("title").s(),
-                item.get("completed").bool(),
-                Long.parseLong(item.get("createdAt").n()),
-                Long.parseLong(item.get("updatedAt").n()));
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        s.request(Long.MAX_VALUE);
+                    }
+
+                    @Override
+                    public void onNext(T item) {
+                        items.add(item);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        future.completeExceptionally(t);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        future.complete(items);
+                    }
+                });
+        return future;
     }
 }
