@@ -22,7 +22,6 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
@@ -51,9 +50,9 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
                     String counterTableName) {
         this.client = client;
         this.counterTableName = counterTableName;
-        TableSchema<CounterItem> schema = TableSchema.fromBean(CounterItem.class);
-        this.counterTable = enhancedClient.table(counterTableName, schema);
-        this.asyncCounterTable = enhancedAsyncClient.table(counterTableName, schema);
+        this.counterTable = enhancedClient.table(counterTableName, CounterItem.TABLE_SCHEMA);
+        this.asyncCounterTable =
+                enhancedAsyncClient.table(counterTableName, CounterItem.TABLE_SCHEMA);
     }
 
     @Override

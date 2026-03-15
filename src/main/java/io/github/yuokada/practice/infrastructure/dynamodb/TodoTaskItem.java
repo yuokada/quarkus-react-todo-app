@@ -1,12 +1,48 @@
 package io.github.yuokada.practice.infrastructure.dynamodb;
 
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticAttributeTags;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.StaticTableSchema;
 
 import io.github.yuokada.practice.domain.model.TodoTask;
 
-@DynamoDbBean
 public class TodoTaskItem {
+
+    public static final TableSchema<TodoTaskItem> TABLE_SCHEMA =
+            StaticTableSchema.builder(TodoTaskItem.class)
+                    .newItemSupplier(TodoTaskItem::new)
+                    .addAttribute(
+                            Integer.class,
+                            a ->
+                                    a.name("id")
+                                            .getter(TodoTaskItem::getId)
+                                            .setter(TodoTaskItem::setId)
+                                            .tags(StaticAttributeTags.primaryPartitionKey()))
+                    .addAttribute(
+                            String.class,
+                            a ->
+                                    a.name("title")
+                                            .getter(TodoTaskItem::getTitle)
+                                            .setter(TodoTaskItem::setTitle))
+                    .addAttribute(
+                            Boolean.class,
+                            a ->
+                                    a.name("completed")
+                                            .getter(TodoTaskItem::getCompleted)
+                                            .setter(TodoTaskItem::setCompleted))
+                    .addAttribute(
+                            Long.class,
+                            a ->
+                                    a.name("createdAt")
+                                            .getter(TodoTaskItem::getCreatedAt)
+                                            .setter(TodoTaskItem::setCreatedAt))
+                    .addAttribute(
+                            Long.class,
+                            a ->
+                                    a.name("updatedAt")
+                                            .getter(TodoTaskItem::getUpdatedAt)
+                                            .setter(TodoTaskItem::setUpdatedAt))
+                    .build();
 
     private Integer id;
     private String title;
@@ -16,7 +52,6 @@ public class TodoTaskItem {
 
     public TodoTaskItem() {}
 
-    @DynamoDbPartitionKey
     public Integer getId() {
         return id;
     }

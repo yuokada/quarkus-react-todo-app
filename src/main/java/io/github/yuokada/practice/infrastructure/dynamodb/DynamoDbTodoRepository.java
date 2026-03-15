@@ -14,7 +14,6 @@ import io.quarkus.arc.lookup.LookupIfProperty;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
@@ -44,8 +43,7 @@ public class DynamoDbTodoRepository implements TodoRepository {
                     String counterTableName) {
         this.client = client;
         this.counterTableName = counterTableName;
-        this.todoTable =
-                enhancedClient.table(todoTableName, TableSchema.fromBean(TodoTaskItem.class));
+        this.todoTable = enhancedClient.table(todoTableName, TodoTaskItem.TABLE_SCHEMA);
     }
 
     @Override
