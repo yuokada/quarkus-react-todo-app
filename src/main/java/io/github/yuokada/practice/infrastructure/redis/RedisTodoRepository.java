@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
@@ -12,6 +13,7 @@ import io.quarkus.redis.datasource.value.ValueCommands;
 import io.github.yuokada.practice.domain.model.TodoTask;
 import io.github.yuokada.practice.domain.repository.TodoRepository;
 
+@LookupIfProperty(name = "app.repository.type", stringValue = "redis")
 @ApplicationScoped
 public class RedisTodoRepository implements TodoRepository {
 
