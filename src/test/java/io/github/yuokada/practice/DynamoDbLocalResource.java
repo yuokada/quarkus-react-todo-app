@@ -14,9 +14,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BillingMode;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.KeyType;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
+import software.amazon.awssdk.services.dynamodb.waiters.DynamoDbWaiter;
 
 public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManager {
 
@@ -67,39 +69,45 @@ public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManage
                                         AwsBasicCredentials.create("dummy", "dummy")))
                         .build()) {
 
-            // todo_tasks table — partition key: id (Number)
-            client.createTable(
-                    CreateTableRequest.builder()
-                            .tableName("todo_tasks")
-                            .attributeDefinitions(
-                                    AttributeDefinition.builder()
-                                            .attributeName("id")
-                                            .attributeType(ScalarAttributeType.N)
-                                            .build())
-                            .keySchema(
-                                    KeySchemaElement.builder()
-                                            .attributeName("id")
-                                            .keyType(KeyType.HASH)
-                                            .build())
-                            .billingMode(BillingMode.PAY_PER_REQUEST)
-                            .build());
+            try (DynamoDbWaiter waiter = DynamoDbWaiter.builder().client(client).build()) {
+                // todo_tasks table — partition key: id (Number)
+                client.createTable(
+                        CreateTableRequest.builder()
+                                .tableName("todo_tasks")
+                                .attributeDefinitions(
+                                        AttributeDefinition.builder()
+                                                .attributeName("id")
+                                                .attributeType(ScalarAttributeType.N)
+                                                .build())
+                                .keySchema(
+                                        KeySchemaElement.builder()
+                                                .attributeName("id")
+                                                .keyType(KeyType.HASH)
+                                                .build())
+                                .billingMode(BillingMode.PAY_PER_REQUEST)
+                                .build());
+                waiter.waitUntilTableExists(
+                        DescribeTableRequest.builder().tableName("todo_tasks").build());
 
-            // app_counters table — partition key: counterName (String)
-            client.createTable(
-                    CreateTableRequest.builder()
-                            .tableName("app_counters")
-                            .attributeDefinitions(
-                                    AttributeDefinition.builder()
-                                            .attributeName("counterName")
-                                            .attributeType(ScalarAttributeType.S)
-                                            .build())
-                            .keySchema(
-                                    KeySchemaElement.builder()
-                                            .attributeName("counterName")
-                                            .keyType(KeyType.HASH)
-                                            .build())
-                            .billingMode(BillingMode.PAY_PER_REQUEST)
-                            .build());
+                // app_counters table — partition key: counterName (String)
+                client.createTable(
+                        CreateTableRequest.builder()
+                                .tableName("app_counters")
+                                .attributeDefinitions(
+                                        AttributeDefinition.builder()
+                                                .attributeName("counterName")
+                                                .attributeType(ScalarAttributeType.S)
+                                                .build())
+                                .keySchema(
+                                        KeySchemaElement.builder()
+                                                .attributeName("counterName")
+                                                .keyType(KeyType.HASH)
+                                                .build())
+                                .billingMode(BillingMode.PAY_PER_REQUEST)
+                                .build());
+                waiter.waitUntilTableExists(
+                        DescribeTableRequest.builder().tableName("app_counters").build());
+            }
         }
     }
 }
