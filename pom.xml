@@ -12,7 +12,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.30.8</quarkus.platform.version>
+    <quarkus.platform.version>3.32.3</quarkus.platform.version>
     <aws.sdk.version>2.42.13</aws.sdk.version>
     <google-java-format.version>1.35.0</google-java-format.version>
     <spotless-maven-plugin.version>3.3.0</spotless-maven-plugin.version>
@@ -98,7 +98,7 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
+      <artifactId>quarkus-junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -114,8 +114,7 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>1.21.4</version>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -153,6 +152,7 @@
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
+          <argLine>@{argLine}</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -215,6 +215,9 @@
                 </configuration>
               </execution>
             </executions>
+            <configuration>
+              <argLine>@{argLine}</argLine>
+            </configuration>
           </plugin>
         </plugins>
       </build>
