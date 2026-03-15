@@ -85,8 +85,8 @@ The backend storage can be switched at runtime via `app.repository.type` in `app
 
 | Value | Backend |
 | --- | --- |
-| `redis` (default) | Valkey/Redis |
-| `dynamodb` | DynamoDB (or DynamoDB Local) |
+| `redis` | Valkey/Redis |
+| `dynamodb` (default) | DynamoDB (or DynamoDB Local) |
 
 To use DynamoDB Local in dev mode:
 ```properties
