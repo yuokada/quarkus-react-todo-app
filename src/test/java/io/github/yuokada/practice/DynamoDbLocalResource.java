@@ -52,7 +52,9 @@ public class DynamoDbLocalResource implements QuarkusTestResourceLifecycleManage
 
     @Override
     public void stop() {
-        container.stop();
+        if (container != null && container.isRunning()) {
+            container.stop();
+        }
     }
 
     private void createTables(String ep) {
