@@ -4,6 +4,7 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
@@ -12,6 +13,7 @@ import io.smallrye.mutiny.Uni;
 
 import io.github.yuokada.practice.domain.repository.IncrementRepository;
 
+@LookupIfProperty(name = "app.repository.type", stringValue = "redis")
 @ApplicationScoped
 public class RedisIncrementRepository implements IncrementRepository {
 
