@@ -10,6 +10,7 @@ import io.quarkus.arc.lookup.LookupIfProperty;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
@@ -18,6 +19,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 @LookupIfProperty(name = "app.repository.type", stringValue = "dynamodb")
 @ApplicationScoped
 public class DynamoDbClientProducer {
+
+    private static final String DUMMY_CREDENTIAL = "dummy";
 
     @ConfigProperty(name = "app.dynamodb.region", defaultValue = "ap-northeast-1")
     String region;
@@ -32,12 +35,7 @@ public class DynamoDbClientProducer {
                 DynamoDbClient.builder()
                         .region(Region.of(region))
                         .httpClientBuilder(UrlConnectionHttpClient.builder());
-        endpointOverride.ifPresent(
-                ep ->
-                        builder.endpointOverride(URI.create(ep))
-                                .credentialsProvider(
-                                        StaticCredentialsProvider.create(
-                                                AwsBasicCredentials.create("dummy", "dummy"))));
+        applyLocalEndpoint(builder);
         return builder.build();
     }
 
@@ -45,12 +43,17 @@ public class DynamoDbClientProducer {
     @ApplicationScoped
     public DynamoDbAsyncClient dynamoDbAsyncClient() {
         var builder = DynamoDbAsyncClient.builder().region(Region.of(region));
+        applyLocalEndpoint(builder);
+        return builder.build();
+    }
+
+    private void applyLocalEndpoint(AwsClientBuilder<?, ?> builder) {
         endpointOverride.ifPresent(
                 ep ->
                         builder.endpointOverride(URI.create(ep))
                                 .credentialsProvider(
                                         StaticCredentialsProvider.create(
-                                                AwsBasicCredentials.create("dummy", "dummy"))));
-        return builder.build();
+                                                AwsBasicCredentials.create(
+                                                        DUMMY_CREDENTIAL, DUMMY_CREDENTIAL))));
     }
 }
