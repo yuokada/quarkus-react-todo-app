@@ -20,7 +20,6 @@ import io.smallrye.mutiny.Uni;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
@@ -50,8 +49,7 @@ public class DynamoDbTodoAsyncRepository implements TodoAsyncRepository {
                     String counterTableName) {
         this.client = client;
         this.counterTableName = counterTableName;
-        this.todoTable =
-                enhancedAsyncClient.table(todoTableName, TableSchema.fromBean(TodoTaskItem.class));
+        this.todoTable = enhancedAsyncClient.table(todoTableName, TodoTaskItem.TABLE_SCHEMA);
     }
 
     @Override
