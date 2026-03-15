@@ -21,7 +21,8 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+    # To ease my development, port 8080 is widely held
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory", "-port", "8000"]
 
 volumes:
   valkey-data:
