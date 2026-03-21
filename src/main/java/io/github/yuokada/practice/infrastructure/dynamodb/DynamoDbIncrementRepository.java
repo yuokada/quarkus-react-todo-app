@@ -1,19 +1,14 @@
 package io.github.yuokada.practice.infrastructure.dynamodb;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import io.quarkus.arc.lookup.LookupIfProperty;
 import io.smallrye.mutiny.Uni;
 
@@ -93,7 +88,7 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
     @Override
     public Uni<List<String>> keys() {
         return Uni.createFrom()
-                .completionStage(collectToList(asyncCounterTable.scan().items()))
+                .completionStage(DynamoDbUtils.collectToList(asyncCounterTable.scan().items()))
                 .map(
                         items ->
                                 items.stream()
@@ -102,32 +97,4 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
                                         .collect(Collectors.toList()));
     }
 
-    private static <T> CompletableFuture<List<T>> collectToList(Publisher<T> publisher) {
-        CompletableFuture<List<T>> future = new CompletableFuture<>();
-        publisher.subscribe(
-                new Subscriber<T>() {
-                    private final List<T> items = new ArrayList<>();
-
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        s.request(Long.MAX_VALUE);
-                    }
-
-                    @Override
-                    public void onNext(T item) {
-                        items.add(item);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        future.completeExceptionally(t);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        future.complete(items);
-                    }
-                });
-        return future;
-    }
 }
