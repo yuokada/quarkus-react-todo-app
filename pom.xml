@@ -15,7 +15,7 @@
     <quarkus.platform.version>3.32.3</quarkus.platform.version>
     <aws.sdk.version>2.42.18</aws.sdk.version>
     <google-java-format.version>1.35.0</google-java-format.version>
-    <spotless-maven-plugin.version>3.3.0</spotless-maven-plugin.version>
+    <spotless-maven-plugin.version>3.4.0</spotless-maven-plugin.version>
     <surefire-plugin.version>3.5.5</surefire-plugin.version>
   </properties>
   <dependencyManagement>
