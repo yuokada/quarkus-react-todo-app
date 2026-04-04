@@ -12,7 +12,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.32.3</quarkus.platform.version>
+    <quarkus.platform.version>3.32.4</quarkus.platform.version>
     <aws.sdk.version>2.42.28</aws.sdk.version>
     <google-java-format.version>1.35.0</google-java-format.version>
     <spotless-maven-plugin.version>3.4.0</spotless-maven-plugin.version>
