@@ -11,13 +11,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.arc.lookup.LookupIfProperty;
 
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import io.github.yuokada.practice.domain.model.TodoTask;
@@ -30,43 +29,35 @@ public class DynamoDbTodoRepository implements TodoRepository {
 
     private static final String TODO_ID_COUNTER = "todo_id";
 
+    private final DynamoDbTable<TodoTaskItem> todoTable;
     private final DynamoDbClient client;
-    private final String todoTable;
-    private final String counterTable;
+    private final String counterTableName;
 
     @Inject
     public DynamoDbTodoRepository(
             DynamoDbClient client,
+            DynamoDbEnhancedClient enhancedClient,
             @ConfigProperty(name = "app.dynamodb.table.todo", defaultValue = "todo_tasks")
-                    String todoTable,
+                    String todoTableName,
             @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
-                    String counterTable) {
+                    String counterTableName) {
         this.client = client;
-        this.todoTable = todoTable;
-        this.counterTable = counterTable;
+        this.counterTableName = counterTableName;
+        this.todoTable = enhancedClient.table(todoTableName, TodoTaskItem.TABLE_SCHEMA);
     }
 
     @Override
     public List<TodoTask> findAll() {
-        return client.scan(ScanRequest.builder().tableName(todoTable).build()).items().stream()
-                .map(this::toTodoTask)
+        return todoTable.scan().items().stream()
+                .map(TodoTaskItem::toTask)
                 .sorted(Comparator.comparingInt(TodoTask::id))
                 .collect(Collectors.toList());
     }
 
     @Override
     public TodoTask findById(Integer id) {
-        var item =
-                client.getItem(
-                                GetItemRequest.builder()
-                                        .tableName(todoTable)
-                                        .key(Map.of("id", AttributeValue.fromN(id.toString())))
-                                        .build())
-                        .item();
-        if (item == null || item.isEmpty()) {
-            return null;
-        }
-        return toTodoTask(item);
+        TodoTaskItem item = todoTable.getItem(Key.builder().partitionValue(id).build());
+        return item == null ? null : item.toTask();
     }
 
     @Override
@@ -74,7 +65,7 @@ public class DynamoDbTodoRepository implements TodoRepository {
         Integer nextId = nextId();
         long now = System.currentTimeMillis();
         TodoTask newTask = new TodoTask(nextId, task.title(), task.isCompleted(), now, now);
-        client.putItem(PutItemRequest.builder().tableName(todoTable).item(toItem(newTask)).build());
+        todoTable.putItem(TodoTaskItem.from(newTask));
         return newTask;
     }
 
@@ -91,28 +82,21 @@ public class DynamoDbTodoRepository implements TodoRepository {
                         task.isCompleted(),
                         current.createdAt(),
                         System.currentTimeMillis());
-        client.putItem(PutItemRequest.builder().tableName(todoTable).item(toItem(updated)).build());
+        todoTable.putItem(TodoTaskItem.from(updated));
         return updated;
     }
 
     @Override
     public boolean delete(Integer id) {
-        var deleted =
-                client.deleteItem(
-                                DeleteItemRequest.builder()
-                                        .tableName(todoTable)
-                                        .key(Map.of("id", AttributeValue.fromN(id.toString())))
-                                        .returnValues(ReturnValue.ALL_OLD)
-                                        .build())
-                        .attributes();
-        return deleted != null && !deleted.isEmpty();
+        TodoTaskItem deleted = todoTable.deleteItem(Key.builder().partitionValue(id).build());
+        return deleted != null;
     }
 
     private Integer nextId() {
         var attrs =
                 client.updateItem(
                                 UpdateItemRequest.builder()
-                                        .tableName(counterTable)
+                                        .tableName(counterTableName)
                                         .key(
                                                 Map.of(
                                                         "counterName",
@@ -125,23 +109,5 @@ public class DynamoDbTodoRepository implements TodoRepository {
                                         .build())
                         .attributes();
         return Integer.parseInt(attrs.get("value").n());
-    }
-
-    private Map<String, AttributeValue> toItem(TodoTask task) {
-        return Map.of(
-                "id", AttributeValue.fromN(task.id().toString()),
-                "title", AttributeValue.fromS(task.title()),
-                "completed", AttributeValue.fromBool(task.isCompleted()),
-                "createdAt", AttributeValue.fromN(String.valueOf(task.createdAt())),
-                "updatedAt", AttributeValue.fromN(String.valueOf(task.updatedAt())));
-    }
-
-    private TodoTask toTodoTask(Map<String, AttributeValue> item) {
-        return new TodoTask(
-                Integer.parseInt(item.get("id").n()),
-                item.get("title").s(),
-                item.get("completed").bool(),
-                Long.parseLong(item.get("createdAt").n()),
-                Long.parseLong(item.get("updatedAt").n()));
     }
 }

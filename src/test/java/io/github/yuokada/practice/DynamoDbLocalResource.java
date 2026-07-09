@@ -4,8 +4,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.testcontainers.containers.GenericContainer;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
