@@ -1,7 +1,7 @@
 ---
 services:
   valkey:
-    image: valkey/valkey:9.1.0
+    image: valkey/valkey:9.1.1
     container_name: quarkus-react-todo-valkey
     restart: unless-stopped
     ports:
