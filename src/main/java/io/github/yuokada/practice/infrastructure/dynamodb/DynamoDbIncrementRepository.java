@@ -12,14 +12,13 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.arc.lookup.LookupIfProperty;
 import io.smallrye.mutiny.Uni;
 
-import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 import io.github.yuokada.practice.domain.repository.IncrementRepository;
@@ -32,59 +31,49 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
     // Keys used internally by the application, excluded from keys()
     private static final Set<String> INTERNAL_KEYS = Set.of("todo_id");
 
+    private final DynamoDbTable<CounterItem> counterTable;
+    private final DynamoDbAsyncTable<CounterItem> asyncCounterTable;
     private final DynamoDbClient client;
-    private final DynamoDbAsyncClient asyncClient;
-    private final String counterTable;
+    private final String counterTableName;
 
     @Inject
     public DynamoDbIncrementRepository(
             DynamoDbClient client,
-            DynamoDbAsyncClient asyncClient,
+            DynamoDbEnhancedClient enhancedClient,
+            DynamoDbEnhancedAsyncClient enhancedAsyncClient,
             @ConfigProperty(name = "app.dynamodb.table.counter", defaultValue = "app_counters")
-                    String counterTable) {
+                    String counterTableName) {
         this.client = client;
-        this.asyncClient = asyncClient;
-        this.counterTable = counterTable;
+        this.counterTableName = counterTableName;
+        this.counterTable = enhancedClient.table(counterTableName, CounterItem.TABLE_SCHEMA);
+        this.asyncCounterTable =
+                enhancedAsyncClient.table(counterTableName, CounterItem.TABLE_SCHEMA);
     }
 
     @Override
     public long get(String key) {
-        var item =
-                client.getItem(
-                                GetItemRequest.builder()
-                                        .tableName(counterTable)
-                                        .key(Map.of("counterName", AttributeValue.fromS(key)))
-                                        .build())
-                        .item();
-        if (item == null || item.isEmpty() || !item.containsKey("value")) {
-            return 0L;
-        }
-        return Long.parseLong(item.get("value").n());
+        CounterItem item = counterTable.getItem(Key.builder().partitionValue(key).build());
+        return item == null || item.getValue() == null ? 0L : item.getValue();
     }
 
     @Override
     public void set(String key, long value) {
-        client.putItem(
-                PutItemRequest.builder()
-                        .tableName(counterTable)
-                        .item(
-                                Map.of(
-                                        "counterName", AttributeValue.fromS(key),
-                                        "value", AttributeValue.fromN(String.valueOf(value))))
-                        .build());
+        CounterItem item = new CounterItem();
+        item.setCounterName(key);
+        item.setValue(value);
+        counterTable.putItem(item);
     }
 
     @Override
     public void increment(String key, long incrementBy) {
         client.updateItem(
                 UpdateItemRequest.builder()
-                        .tableName(counterTable)
+                        .tableName(counterTableName)
                         .key(Map.of("counterName", AttributeValue.fromS(key)))
                         .updateExpression("ADD #val :incr")
                         .expressionAttributeNames(Map.of("#val", "value"))
                         .expressionAttributeValues(
                                 Map.of(":incr", AttributeValue.fromN(String.valueOf(incrementBy))))
-                        .returnValues(ReturnValue.UPDATED_NEW)
                         .build());
     }
 
@@ -92,24 +81,20 @@ public class DynamoDbIncrementRepository implements IncrementRepository {
     public Uni<Void> delete(String key) {
         return Uni.createFrom()
                 .completionStage(
-                        asyncClient.deleteItem(
-                                DeleteItemRequest.builder()
-                                        .tableName(counterTable)
-                                        .key(Map.of("counterName", AttributeValue.fromS(key)))
-                                        .build()))
+                        asyncCounterTable.deleteItem(Key.builder().partitionValue(key).build()))
                 .replaceWithVoid();
     }
 
     @Override
     public Uni<List<String>> keys() {
         return Uni.createFrom()
-                .completionStage(
-                        asyncClient.scan(ScanRequest.builder().tableName(counterTable).build()))
+                .completionStage(DynamoDbUtils.collectToList(asyncCounterTable.scan().items()))
                 .map(
-                        response ->
-                                response.items().stream()
-                                        .map(item -> item.get("counterName").s())
+                        items ->
+                                items.stream()
+                                        .map(CounterItem::getCounterName)
                                         .filter(k -> !INTERNAL_KEYS.contains(k))
                                         .collect(Collectors.toList()));
     }
+
 }
