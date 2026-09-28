@@ -22,18 +22,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK
-        uses: actions/setup-java@v6
+      - name: Set up toolchain
+        uses: jdx/mise-action@v4
+      - name: Cache dependencies
+        uses: actions/cache@v6
         with:
-          java-version-file: '.tool-versions'
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Set up node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.tool-versions'
-          cache-dependency-path: 'src/main/webui/package-lock.json'
-          cache: 'npm'
+          path: |
+            ~/.m2/repository
+            ~/.npm
+          key: ${{ runner.os }}-dependencies-${{ hashFiles('pom.xml', '.mvn/**', 'src/main/webui/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dependencies-
       - name: Install frontend dependencies
         working-directory: src/main/webui
         run: npm ci

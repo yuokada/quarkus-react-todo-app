@@ -45,9 +45,19 @@ In practice, this means REST resources do not talk to Redis directly, and applic
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
 | Build container image (Jib) | `./mvnw package -Dquarkus.container-image.build=true` | Produces an OCI image via Jib; append `-Dquarkus.container-image.push=true` to push. |
 
-Toolchain:
+Toolchain versions are managed by [mise](https://mise.jdx.dev/) in `mise.toml`:
 - Java: Temurin 25
-- Node.js: 24.14.0
+- Node.js: 24.21
+
+After installing mise, provision the project toolchain from the repository root:
+
+```shell
+mise install
+mise exec -- java -version
+mise exec -- node --version
+```
+
+mise derives `JAVA_HOME` from the configured Java installation, so activated shells and commands executed with `mise exec` use the selected Temurin JDK automatically.
 
 ## Quinoa Configuration
 `src/main/resources/application.properties` contains:

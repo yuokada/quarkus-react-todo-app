@@ -52,6 +52,6 @@ configuration:
       - 'src/main/resources/**/*.properties'
       - 'src/main/resources/**/*.yml'
       - 'src/main/resources/**/*.yaml'
-      - '.tool-versions'
+      - 'mise.toml'
       - '.github/labeler.yml'
       - '.pre-commit-config.yaml'
