@@ -57,6 +57,8 @@ mise exec -- java -version
 mise exec -- node --version
 ```
 
+mise derives `JAVA_HOME` from the configured Java installation, so activated shells and commands executed with `mise exec` use the selected Temurin JDK automatically.
+
 ## Quinoa Configuration
 `src/main/resources/application.properties` contains:
 ```properties
