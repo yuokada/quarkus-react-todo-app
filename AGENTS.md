@@ -34,5 +34,5 @@ Note: During dev, Quarkus proxies Vite (default 5173). OpenAPI output goes to `o
 
 ## Security / Configuration Tips
 - Redis: Comment out `quarkus.redis.hosts` when using DevServices. For local use, set `%dev.quarkus.redis.hosts=redis://localhost:6379/0`.
-- Node/JDK: Follow versions in `.tool-versions`; CI uses the same.
+- Node/JDK: Follow versions in `mise.toml`; run `mise install` after cloning. CI uses the same configuration.
 - Containers: Use Jib (`quarkus-container-image-jib`) to build images.
