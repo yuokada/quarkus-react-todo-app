@@ -16,6 +16,7 @@
     <aws.sdk.version>2.55.11</aws.sdk.version>
     <google-java-format.version>1.35.0</google-java-format.version>
     <spotless-maven-plugin.version>3.10.3</spotless-maven-plugin.version>
+    <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <surefire-plugin.version>3.6.0</surefire-plugin.version>
   </properties>
   <dependencyManagement>
@@ -189,6 +190,27 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${checkstyle-plugin.version}</version>
+        <configuration>
+          <configLocation>${maven.multiModuleProjectDirectory}/checkstyle/main.xml</configLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <violationSeverity>warning</violationSeverity>
+          <consoleOutput>true</consoleOutput>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
   <profiles>
