@@ -13,6 +13,9 @@ updates:
     ignore:
       - dependency-name: "io.quarkus.platform:*"
         update-types: ["version-update:semver-minor"]
+      # Quinoa 2.9.x requires a newer Quarkus deployment API than 3.33.x.
+      - dependency-name: "io.quarkiverse.quinoa:quarkus-quinoa"
+        versions: ["[2.9,)"]
     groups:
       maven-plugin-dependencies:
         patterns:

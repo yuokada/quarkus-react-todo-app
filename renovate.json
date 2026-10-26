@@ -13,6 +13,10 @@
       "allowedVersions": "/^3.(15|20)(\\..*)?$/"
     },
     {
+      "matchPackageNames": ["io.quarkiverse.quinoa:quarkus-quinoa"],
+      "allowedVersions": "<2.9.0"
+    },
+    {
       "matchDatasources": ["npm"],
       "minimumReleaseAge": "7 days"
     }
