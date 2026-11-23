@@ -1,6 +1,6 @@
 [tools]
 java = "temurin-25"
-node = "24"
+node = "26"
 
 [env]
 JAVA_HOME = { value = "{{ tools.java.path }}", tools = true }
