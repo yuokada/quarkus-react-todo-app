@@ -2,14 +2,26 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
+      "matchDatasources": ["node-version"],
+      "matchUpdateTypes": ["major"],
+      "enabled": true
+    },
+    {
       "groupName": "all testing-library updates",
       "groupSlug": "testing-library",
-      "matchPackagePrefixes": [
-        "@testing-library/"
+      "matchPackageNames": [
+        "@testing-library/**"
       ]
     },
     {
-      "matchPackagePatterns": ["^io.quarkus:*"],
+      "description": "Keep React runtime and type definitions together for major updates",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "React packages",
+      "groupSlug": "react"
+    },
+    {
+      "matchPackageNames": ["/^io.quarkus:*/"],
       "allowedVersions": "/^3.(15|20)(\\..*)?$/"
     },
     {
@@ -19,15 +31,45 @@
     {
       "matchDatasources": ["npm"],
       "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Group routine frontend dependency updates",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "groupName": "npm non-major dependencies",
+      "groupSlug": "npm-non-major"
+    },
+    {
+      "description": "Group routine Java dependency and Maven plugin updates",
+      "matchManagers": ["maven"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "groupName": "Maven non-major dependencies",
+      "groupSlug": "maven-non-major"
+    },
+    {
+      "description": "Group routine GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "groupName": "GitHub Actions non-major dependencies",
+      "groupSlug": "github-actions-non-major"
+    },
+    {
+      "description": "Group routine container image updates",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "groupName": "container non-major dependencies",
+      "groupSlug": "container-non-major"
+    },
+    {
+      "description": "Group routine mise toolchain updates",
+      "matchManagers": ["mise"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "pinDigest"],
+      "groupName": "toolchain non-major dependencies",
+      "groupSlug": "toolchain-non-major"
     }
   ],
-  "node": {
-    "supportPolicy": ["all"],
-    "major": {
-      "enabled": true
-    }
-  },
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "group:vite"
   ]
 }
