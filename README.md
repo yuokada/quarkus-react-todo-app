@@ -47,7 +47,7 @@ In practice, this means REST resources do not talk to Redis directly, and applic
 
 Toolchain versions are managed by [mise](https://mise.jdx.dev/) in `mise.toml`:
 - Java: Temurin 25
-- Node.js: 24.21
+- Node.js: 26
 
 After installing mise, provision the project toolchain from the repository root:
 
