@@ -4,3 +4,17 @@ node = "26"
 
 [env]
 JAVA_HOME = { value = "{{ tools.java.path }}", tools = true }
+
+[tasks.valkey-up]
+description = "Start the local Valkey container"
+run = "docker compose up valkey -d --wait"
+
+[tasks.valkey-down]
+description = "Stop the local Valkey container"
+run = "docker compose down"
+
+[tasks.dev]
+description = "Start Valkey and run Quarkus with the React dev server"
+depends = ["valkey-up"]
+env = { QUARKUS_REDIS_HOSTS = "redis://localhost:6379/0", QUARKUS_REDIS_DEVSERVICES_ENABLED = "false" }
+run = "./mvnw compile quarkus:dev"

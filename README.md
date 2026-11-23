@@ -33,13 +33,12 @@ In practice, this means REST resources do not talk to Redis directly, and applic
 ## Common Commands
 | Purpose | Command | Notes |
 | --- | --- | --- |
-| Backend + frontend live coding | `./mvnw compile quarkus:dev` | Launches Quarkus dev mode and Quinoa-managed Vite dev server at `http://localhost:8080`. Dev UI at `/q/dev`. |
+| Backend + frontend live coding | `mise run dev` | Starts Valkey, then launches Quarkus dev mode and the Quinoa-managed Vite dev server at `http://localhost:8080`. Dev UI at `/q/dev`. |
 | Backend tests | `./mvnw test` | Uses Redis DevServices or local Redis depending on config. |
 | Package JAR | `./mvnw package` | Artifacts end up in `target/quarkus-app/`. |
 | Native build | `./mvnw package -Pnative` | Add `-Dquarkus.native.container-build=true` to build via container. |
-| Start local Valkey | `docker compose up valkey -d` | Exposes Valkey on `localhost:6379` for local dev. |
-| Start DynamoDB Local | `docker compose up dynamodb-local -d` | Exposes DynamoDB Local on `localhost:8000`. |
-| Init DynamoDB tables | `./scripts/init-dynamodb.sh` | Creates `todo_tasks` and `app_counters` tables. Requires AWS CLI. |
+| Start local Valkey | `mise run valkey-up` | Exposes Valkey on `localhost:6379` for local dev. |
+| Stop local Valkey | `mise run valkey-down` | Stops the Compose services without deleting the Valkey data volume. |
 | Frontend lint/check | `cd src/main/webui && npm run biome:check` | Runs Biome without modifying files. |
 | Frontend dev only | `cd src/main/webui && npm run dev` | Runs Vite standalone (default port 5173). |
 | Frontend build | `cd src/main/webui && npm run build` | Updates Quinoa’s source `dist/` folder. |
@@ -95,24 +94,17 @@ The backend storage can be switched at runtime via `app.repository.type` in `app
 
 | Value | Backend |
 | --- | --- |
-| `redis` | Valkey/Redis |
-| `dynamodb` (default) | DynamoDB (or DynamoDB Local) |
+| `redis` (dev/test default) | Valkey/Redis |
+| `dynamodb` (production default) | DynamoDB |
 
-To use DynamoDB Local in dev mode:
-```properties
-%dev.app.repository.type=dynamodb
-%dev.app.dynamodb.endpoint-override=http://localhost:8000
-```
-
-Steps:
-1. `docker compose up dynamodb-local -d`
-2. `./scripts/init-dynamodb.sh`
-3. `./mvnw compile quarkus:dev`
+Dev mode uses Valkey through Quarkus DevServices by default. DynamoDB remains available for
+production and is covered by dedicated integration tests that start DynamoDB Local through
+Testcontainers.
 
 ## Redis Usage
 - **DevServices**: Leaving `%dev.quarkus.redis.hosts` commented lets Quarkus start Redis automatically in dev/test.
 - **Local Redis**: Set `%dev.quarkus.redis.hosts=redis://localhost:6379/0` to reuse an existing instance.
-- **Docker Compose**: `docker compose up -d` starts the local Valkey container defined in [`compose.yaml`](compose.yaml); stop it with `docker compose down`.
+- **Docker Compose**: `mise run dev` starts the Valkey container defined in [`compose.yaml`](compose.yaml), disables Redis DevServices for that process, and connects Quarkus to `redis://localhost:6379/0`. Use `mise run valkey-down` when finished.
 - Seed scripts (`users.redis`, `test-task.redis`) help bootstrap data when needed.
 
 ## Testing
