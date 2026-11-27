@@ -118,12 +118,17 @@ export AI_PROVIDER=ai-gemini
 export GEMINI_API_KEY='...'
 # Optional; defaults to gemini-2.5-flash
 export GEMINI_MODEL='gemini-2.5-flash'
+# Optional; request timeout, defaults to 60 seconds
+export GEMINI_TIMEOUT='60s'
 mise run dev
 ```
 
 Only one provider key is required. `AI_PROVIDER` accepts `openai` or `ai-gemini`; OpenAI is the
 default. Provider, key, and model settings can also be supplied with the corresponding Quarkus
 environment variables documented in `application.properties`.
+
+Gemini responses can take longer when the service is busy or the agent invokes tools. Increase
+`GEMINI_TIMEOUT` (for example, to `120s`) if 60 seconds is insufficient.
 
 Never put a real API key in the React source, `application.properties`, or `mise.toml`. Keep it in
 the server process environment or a production secrets manager. The repository ignores `.env`,
