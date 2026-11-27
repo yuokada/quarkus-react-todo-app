@@ -111,7 +111,8 @@ mise run dev
 ### Gemini setup
 
 Create a Gemini API key in [Google AI Studio](https://aistudio.google.com/app/apikey) and select
-the Gemini provider:
+the Gemini provider. See the [Gemini model documentation](https://aistudio.google.com/docs/models)
+for the currently available models:
 
 ```shell
 export AI_PROVIDER=ai-gemini
