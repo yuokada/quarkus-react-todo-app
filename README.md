@@ -116,8 +116,8 @@ the Gemini provider:
 ```shell
 export AI_PROVIDER=ai-gemini
 export GEMINI_API_KEY='...'
-# Optional; defaults to gemini-2.5-flash
-export GEMINI_MODEL='gemini-2.5-flash'
+# Optional; defaults to gemini-3.5-flash
+export GEMINI_MODEL='gemini-3.5-flash'
 # Optional; request timeout, defaults to 60 seconds
 export GEMINI_TIMEOUT='60s'
 mise run dev
