@@ -4,6 +4,7 @@ This project combines a Quarkus REST backend with a Vite/React Todo UI using the
 
 ## Architecture at a Glance
 - **Backend**: Quarkus 3 + RESTEasy Reactive + Quarkus Redis Client. The Java code is organized into domain, application, infrastructure, and presentation packages under `src/main/java/io/github/yuokada/practice`.
+- **AI agent**: Quarkus LangChain4j connects OpenAI or Gemini to typed Todo tools. The model can inspect and change tasks only through `TodoService`.
 - **Frontend**: React (Vite) with the main logic in `src/main/webui/src/App.jsx`.
 - **Storage**: Redis (DevServices or `redis://localhost:6379/0`). Tasks are stored as the `TodoTask` record.
 - **Quinoa**: Bridges Quarkus and the Vite app. In dev mode it proxies the Vite dev server; in prod it serves the built `dist/index.html` and assets.
@@ -83,6 +84,77 @@ Additional async endpoints (`/api/async/todos`) and increment examples are expos
 
 see also: http://localhost:8080/q/swagger-ui/
 
+## AI Todo Agent
+
+The application includes a chat-based Todo agent at `POST /api/agent`. It can list, inspect,
+create, update, and delete Todo tasks by calling typed LangChain4j tools. Tool calls go through
+`TodoService`, so the same agent works with Valkey in development and DynamoDB in production.
+
+The browser UI displays the agent next to the Todo list. After an agent response, the list is
+automatically refreshed. Conversation memory keeps the most recent 10 messages per `sessionId`
+in application memory. It is cleared when the application restarts.
+
+### OpenAI setup
+
+Create an [OpenAI API key](https://platform.openai.com/api-keys) with API billing or credits
+enabled, then export it in the shell that starts Quarkus. A ChatGPT subscription does not
+automatically provide API usage.
+
+```shell
+export AI_PROVIDER=openai
+export OPENAI_API_KEY='sk-...'
+# Optional; defaults to gpt-4o-mini
+export OPENAI_MODEL='gpt-4o-mini'
+mise run dev
+```
+
+### Gemini setup
+
+Create a Gemini API key in [Google AI Studio](https://aistudio.google.com/app/apikey) and select
+the Gemini provider:
+
+```shell
+export AI_PROVIDER=ai-gemini
+export GEMINI_API_KEY='...'
+# Optional; defaults to gemini-2.5-flash
+export GEMINI_MODEL='gemini-2.5-flash'
+mise run dev
+```
+
+Only one provider key is required. `AI_PROVIDER` accepts `openai` or `ai-gemini`; OpenAI is the
+default. Provider, key, and model settings can also be supplied with the corresponding Quarkus
+environment variables documented in `application.properties`.
+
+Never put a real API key in the React source, `application.properties`, or `mise.toml`. Keep it in
+the server process environment or a production secrets manager. The repository ignores `.env`,
+but exporting secrets directly or using a dedicated secret manager is preferred.
+
+### Using the agent
+
+Open <http://localhost:8080> and enter a request in the **Todo assistant** panel, for example:
+
+- `未完了のタスクを一覧にして`
+- `「リリースノートを書く」という未完了タスクを追加して`
+- `ID 4 のタスクを完了にして`
+- `ID 7 を削除して` (the agent asks for explicit confirmation before deletion)
+
+The endpoint can also be called directly. Reuse the same `sessionId` to continue a conversation:
+
+```shell
+curl -X POST http://localhost:8080/api/agent \
+  -H 'Content-Type: application/json' \
+  -d '{"sessionId":"demo-user","message":"未完了のタスクを教えて"}'
+```
+
+Example response:
+
+```json
+{"message":"未完了のタスクは3件あります。..."}
+```
+
+Requests are limited to 2,000 characters and five sequential tool executions. Automated tests
+disable both live model integrations and never call OpenAI or Gemini.
+
 ## Frontend Highlights
 - `App.jsx` implements list rendering, creation form, completion toggles, and deletion, all backed by fetch calls to `/api/todos`.
 - `App.css` provides a lightweight card-style layout with responsive tweaks.
@@ -121,6 +193,8 @@ Testcontainers.
 ## Related Guides
 
 - RESTEasy Reactive ([guide](https://quarkus.io/guides/resteasy-reactive)): Build reactive REST services with Quarkus.
+- Quarkus LangChain4j ([guide](https://docs.quarkiverse.io/quarkus-langchain4j/dev/index.html)): Configure AI services, tools, and model providers.
+- LangChain4j function calling ([guide](https://docs.quarkiverse.io/quarkus-langchain4j/dev/function-calling.html)): Expose typed application operations to a model.
 - Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Develop, build, and serve SPA frontends alongside Quarkus services.
 - DynamoDB support plan: [`docs/dynamodb-support-plan.md`](docs/dynamodb-support-plan.md)
 - Reactive return type notes: [`docs/reactive-return-types.md`](docs/reactive-return-types.md)

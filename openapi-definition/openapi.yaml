@@ -1,6 +1,26 @@
 ---
 openapi: 3.1.0
 paths:
+  /api/agent:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentChatRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentChatResponse"
+        "400":
+          description: Bad Request
+      summary: Chat
+      tags:
+      - Todo Agent Resource
   /api/async/todos:
     post:
       requestBody:
@@ -260,6 +280,25 @@ paths:
       - Increment Resource
 components:
   schemas:
+    AgentChatRequest:
+      type: object
+      required:
+      - sessionId
+      - message
+      properties:
+        sessionId:
+          type: string
+          pattern: \S
+          maxLength: 100
+        message:
+          type: string
+          pattern: \S
+          maxLength: 2000
+    AgentChatResponse:
+      type: object
+      properties:
+        message:
+          type: string
     Increment:
       type: object
       properties:
