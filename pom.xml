@@ -15,6 +15,7 @@
     <quarkus.platform.version>3.33.4.2</quarkus.platform.version>
     <aws.sdk.version>2.59.5</aws.sdk.version>
     <google-java-format.version>1.35.0</google-java-format.version>
+    <quarkus-langchain4j.version>1.7.9</quarkus-langchain4j.version>
     <spotless-maven-plugin.version>3.11.0</spotless-maven-plugin.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <surefire-plugin.version>3.6.1</surefire-plugin.version>
@@ -80,6 +81,16 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkiverse.langchain4j</groupId>
+      <artifactId>quarkus-langchain4j-openai</artifactId>
+      <version>${quarkus-langchain4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkiverse.langchain4j</groupId>
+      <artifactId>quarkus-langchain4j-ai-gemini</artifactId>
+      <version>${quarkus-langchain4j.version}</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
